@@ -1,0 +1,11 @@
+---
+title: "Lab Activity 1: Part 1"
+author: "Thanh Dao"
+format: pdf
+editor: visual
+---
+
+If you'd like to reach me, you can contact me in the following ways: 
+
+1. Add me on \[LinkedIn\](<https://www.linkedin.com/in/thanht-dao/>)!
+2. Email me at daothanht922@gmail.com 
