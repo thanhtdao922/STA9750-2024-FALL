@@ -4,6 +4,132 @@
     "href": "index.html",
     "title": "Hello World!",
     "section": "",
-    "text": "I’m Thanh, and I’m a current MS in Business Analytics student at CUNY Baruch. Nice to meet you!\nFeel free to check out my resume and reach out!"
+    "text": "I’m Thanh, and I’m a current MS: Business Analytics student at CUNY Baruch. Nice to meet you!\nFeel free to check out my resume and reach out!\nAdd me on LinkedIn!"
+  },
+  {
+    "objectID": "mp01.html",
+    "href": "mp01.html",
+    "title": "Mini-Project #01",
+    "section": "",
+    "text": "In this report, you will find the fiscal characteristics of major US public transit systems.\nThe following table displays the data obtained by the National Transit Database."
+  },
+  {
+    "objectID": "mp01.html#fare-revenue",
+    "href": "mp01.html#fare-revenue",
+    "title": "mp01",
+    "section": "Fare Revenue",
+    "text": "Fare Revenue\nlibrary(tidyverse) if(!file.exists(“2022_fare_revenue.xlsx”)){ download.file(“http://www.transit.dot.gov/sites/fta.dot.gov/files/2024-04/2022%20Fare%20Revenue.xlsx”, destfile=“2022_fare_revenue.xlsx”, quiet=FALSE, method=“wget”) } FARES &lt;- readxl::read_xlsx(“2022_fare_revenue.xlsx”) |&gt; select(-State/Parent NTD ID, -Reporter Type, -Reporting Module, -TOS, -Passenger Paid Fares, -Organization Paid Fares) |&gt; filter(Expense Type == “Funds Earned During Period”) |&gt; select(-Expense Type)"
+  },
+  {
+    "objectID": "mp01.html#expenses",
+    "href": "mp01.html#expenses",
+    "title": "mp01",
+    "section": "Expenses",
+    "text": "Expenses\nif(!file.exists(“2022_expenses.csv”)){ download.file(“https://data.transportation.gov/api/views/dkxx-zjd6/rows.csv?date=20231102&accessType=DOWNLOAD&bom=true&format=true”, destfile=“2022_expenses.csv”, quiet=FALSE, method=“wget”) } EXPENSES &lt;- readr::read_csv(“2022_expenses.csv”) |&gt; select(NTD ID, Agency, Total, Mode) |&gt; mutate(NTD ID = as.integer(NTD ID)) |&gt; rename(Expenses = Total) |&gt; group_by(NTD ID, Mode) |&gt; summarize(Expenses = sum(Expenses)) |&gt; ungroup()\nFINANCIALS &lt;- inner_join(FARES, EXPENSES, join_by(NTD ID, Mode))"
+  },
+  {
+    "objectID": "mp01.html#monthly-transit-numbers",
+    "href": "mp01.html#monthly-transit-numbers",
+    "title": "mp01",
+    "section": "Monthly Transit Numbers",
+    "text": "Monthly Transit Numbers\nlibrary(tidyverse) if(!file.exists(“ridership.xlsx”)){ download.file(“https://www.transit.dot.gov/sites/fta.dot.gov/files/2024-09/July%202024%20Complete%20Monthly%20Ridership%20%28with%20adjustments%20and%20estimates%29_240903.xlsx”, destfile=“ridership.xlsx”, quiet=FALSE, method=“wget”) } library(lubridate) # added for the my() function\nTRIPS &lt;- readxl::read_xlsx(“ridership.xlsx”, sheet=“UPT”) |&gt; filter(Mode/Type of Service Status == “Active”) |&gt; select(-Legacy NTD ID, -Reporter Type, -Mode/Type of Service Status, -UACE CD, -TOS) |&gt; pivot_longer(-c(NTD ID:3 Mode), names_to=“month”, values_to=“UPT”) |&gt; drop_na() |&gt; mutate(month=my(month)) MILES &lt;- readxl::read_xlsx(“ridership.xlsx”, sheet=“VRM”) |&gt; filter(Mode/Type of Service Status == “Active”) |&gt; select(-Legacy NTD ID, -Reporter Type, -Mode/Type of Service Status, -UACE CD, -TOS) |&gt; pivot_longer(-c(NTD ID:3 Mode), names_to=“month”, values_to=“VRM”) |&gt; drop_na() |&gt; group_by(NTD ID, Agency, UZA Name, Mode, 3 Mode, month) |&gt; summarize(VRM = sum(VRM)) |&gt; ungroup() |&gt; mutate(month=my(month))\nUSAGE &lt;- inner_join(TRIPS, MILES) |&gt; mutate(NTD ID = as.integer(NTD ID))"
+  },
+  {
+    "objectID": "mp01.html#task-1-create-syntactic-names",
+    "href": "mp01.html#task-1-create-syntactic-names",
+    "title": "mp01",
+    "section": "Task 1: Create Syntactic Names",
+    "text": "Task 1: Create Syntactic Names\nUSAGE &lt;- rename(USAGE, “metro_area” = “UZA Name”) USAGE &lt;- rename(USAGE, “unlinked_passenger_trips” = “UPT”) USAGE &lt;- rename(USAGE, “vehicle_revenue_miles” = “VRM”)"
+  },
+  {
+    "objectID": "mp01.html#task-2-recoding-the-mode-column",
+    "href": "mp01.html#task-2-recoding-the-mode-column",
+    "title": "mp01",
+    "section": "Task 2: Recoding the Mode Column",
+    "text": "Task 2: Recoding the Mode Column\nunique(USAGE$Mode) # Find the unique Mode codes\nUSAGE &lt;- USAGE |&gt; # Interpret the Mode column mutate(Mode = case_when( Mode == “AR” ~ “Alaska Railroad”, Mode == “CB” ~ “Commuter Bus”, Mode == “CC” ~ “Cable Car”, Mode == “CR” ~ “Commuter Rail”, Mode == “DR” ~ “Demand Response”, Mode == “FB” ~ “Ferryboat”, Mode == “HR” ~ “Heavy Rail”, Mode == “IP” ~ “Inclined Plane”, Mode == “LR” ~ “Light Rail”, Mode == “MB” ~ “Bus”, Mode == “MG” ~ “Monorail and Automated Guideway”, Mode == “PB” ~ “Publico”, Mode == “RB” ~ “Bus Rapid Transit”, Mode == “SR” ~ “Streetcar Rail”, Mode == “TB” ~ “Trolleybus”, Mode == “TR” ~ “Aerial Tramways”, Mode == “VP” ~ “Vanpool”, Mode == “YR” ~ “Hybrid Rail”, TRUE ~ “Unknown”))\nUSAGE &lt;- USAGE |&gt; # Remove “NTD ID” and “3 Mode” select(-c(“NTD ID”, “3 Mode”))\nif(!require(“DT”)) install.packages(“DT”) library(DT)\nsample_n(USAGE, 1000) |&gt; mutate(month=as.character(month)) |&gt; DT::datatable()"
+  },
+  {
+    "objectID": "mp01.html#task-3-answering-instructor-specified-questions-with-dplyr",
+    "href": "mp01.html#task-3-answering-instructor-specified-questions-with-dplyr",
+    "title": "mp01",
+    "section": "Task 3: Answering Instructor Specified Questions with dplyr",
+    "text": "Task 3: Answering Instructor Specified Questions with dplyr"
+  },
+  {
+    "objectID": "mp01.html#task-4-explore-and-analyze",
+    "href": "mp01.html#task-4-explore-and-analyze",
+    "title": "mp01",
+    "section": "Task 4: Explore and Analyze",
+    "text": "Task 4: Explore and Analyze"
+  },
+  {
+    "objectID": "mp01.html#task-5-table-summarization",
+    "href": "mp01.html#task-5-table-summarization",
+    "title": "mp01",
+    "section": "Task 5: Table Summarization",
+    "text": "Task 5: Table Summarization"
+  },
+  {
+    "objectID": "mp01.html#task-6-farebox-recovery-among-major-systems",
+    "href": "mp01.html#task-6-farebox-recovery-among-major-systems",
+    "title": "mp01",
+    "section": "Task 6: Farebox Recovery Among Major Systems",
+    "text": "Task 6: Farebox Recovery Among Major Systems"
+  },
+  {
+    "objectID": "Lab Activity 1: Part 1.html",
+    "href": "Lab Activity 1: Part 1.html",
+    "title": "Lab Activity 1: Part 1",
+    "section": "",
+    "text": "If you’d like to reach me, you can contact me in the following ways:\n\nAdd me on [LinkedIn](https://www.linkedin.com/in/thanht-dao/)!\nEmail me at daothanht922@gmail.com"
+  },
+  {
+    "objectID": "mp01.html#introduction",
+    "href": "mp01.html#introduction",
+    "title": "Mini-Project #01",
+    "section": "",
+    "text": "In this report, you will find the fiscal characteristics of major US public transit systems.\nThe following table displays the data obtained by the National Transit Database."
+  },
+  {
+    "objectID": "mp01.html#findings",
+    "href": "mp01.html#findings",
+    "title": "Mini-Project #01",
+    "section": "Findings",
+    "text": "Findings"
+  },
+  {
+    "objectID": "mp01.html#analysis",
+    "href": "mp01.html#analysis",
+    "title": "Mini-Project #01",
+    "section": "Analysis",
+    "text": "Analysis\nIn this sample, we can determine a few things.\nIf we were to examine the most total vehicle miles through the lens of transit mode, buses had the highest, with 49,444,494,088 miles.\nNow let’s take a closer look at the MTA New York City Transit, which was the agency with the most total vehicle revenue miles, of approximately 10,800,000,000 miles. When examining the MTA heavy rail, it can be determined that 180,458,819 trips were taken in May 2024.\nIn contrast to these high numbers, due to the COVID-19 pandemic, we can see the fall of NYC subway ridership fall between the time of April 2019 and April 2020, with ridership falling from 232,223,929 to 20,254,269, respectively. This points to a difference of 211,969,660 rides."
+  },
+  {
+    "objectID": "mp01.html#farebox-recovery-analysis",
+    "href": "mp01.html#farebox-recovery-analysis",
+    "title": "Mini-Project #01",
+    "section": "Farebox Recovery Analysis",
+    "text": "Farebox Recovery Analysis\nThe following table displays the data obtained in 2022 by the National Transit Database.\n\n\n\n\n\n\nWhen analyzing the farebox recovery, we can see that the transit system with the most unlinked passenger trips in 2022 was the MTA New York CIty Transit, specifically the heavy rail, with 1,793,073,801 trips.\nmostUPT2022 &lt;- USAGE_AND_FINANCIALS |&gt; \n  group_by(Agency, Mode) |&gt;\n  filter(total_upt &gt; 400000) |&gt;\n  summarize(total_upt2022 = sum(total_upt)) |&gt;\n  arrange(desc(total_upt2022))\nhead(mostUPT2022, n=1)\nHowever, if we were to examine the transit system with the highest farebox recovery, it would be the Anaheim Transportation Network, specifically the bus, with 0.865.\nhighestfarebox &lt;- USAGE_AND_FINANCIALS |&gt; \n  group_by(Agency, Mode) |&gt;\n  filter(total_upt &gt; 400000) |&gt;\n  summarize(highestfarebox = sum(`Total Fares`) / sum (Expenses)) |&gt;\n  arrange(desc(highestfarebox))\nhead(highestfarebox, n=1)\nMoving on, when examining the transit system with the lowest expenses per unlinked passenger trip, it would be the University of Georgia bus system, with $14.90 per trip.\nlowestexpenses &lt;- USAGE_AND_FINANCIALS |&gt;\n  group_by(Agency, Mode) |&gt;\n  filter(total_upt &gt; 400000) |&gt;\n  summarize(lowestexpenses = sum(Expenses) / sum(total_upt)) |&gt;\n  arrange(desc(lowestexpenses))\ntail(lowestexpenses, n=1)\nComparatively, the transit system with lowest expenses per vehicle revenue mile is the Interurban Transit Partnership bus system, with $84.10 per mile.\nlowestexpensesvrm &lt;- USAGE_AND_FINANCIALS |&gt; \n  group_by(Agency, Mode) |&gt;\n  filter(total_upt &gt; 400000) |&gt;\n  summarize(lowestexpensesvrm = sum(Expenses) / sum(total_vrm)) |&gt;\n  arrange(desc(lowestexpensesvrm))\ntail(lowestexpensesvrm, n=1)\nMeanwhile, the transit system with the highest total fares per unlinked passenger trip is the Metro-North Commuter Railroad Company, with the bus, at $98.70 per trip.\nhighestfares &lt;- USAGE_AND_FINANCIALS |&gt;\n  group_by(Agency, Mode) |&gt;\n  filter(total_upt &gt; 400000) |&gt;\n  summarize(highestfares = sum(`Total Fares`) / sum(total_upt)) |&gt;\n  arrange(desc(highestfares))\nhead(highestfares, n=1)\nComparatively, the transit system with highest total fares per vehicle revenue mile is the Washington State Ferries with the ferryboat, at $937 per mile.\nhighestfaresvrm &lt;- USAGE_AND_FINANCIALS |&gt; \n  group_by(Agency, Mode) |&gt;\n  filter(total_upt &gt; 400000) |&gt;\n  summarize(highestfaresvrm = sum(`Total Fares`) / sum(total_vrm)) |&gt;\n  arrange(desc(highestfaresvrm))\nhead(highestfaresvrm, n=1)"
+  },
+  {
+    "objectID": "mp01.html#conclusions",
+    "href": "mp01.html#conclusions",
+    "title": "Mini-Project #01",
+    "section": "Conclusions",
+    "text": "Conclusions\nOverall, the most efficient transit system in the country is the MTA New York City Transit. It is the largest North American transit system, and has proven that it is as efficient as its size. It has the most total and average vehicle revenue miles. Additionally, in 2022, it was the transit system with the most unlinked passenger trips."
+  },
+  {
+    "objectID": "mp01.html#main-analysis",
+    "href": "mp01.html#main-analysis",
+    "title": "Mini-Project #01",
+    "section": "Main Analysis",
+    "text": "Main Analysis\nIn this sample, we can determine a few things.\nIf we were to examine the most total vehicle miles through the lens of transit mode, buses had the highest, with 49,444,494,088 miles.\nUSAGE |&gt;\n  group_by(Mode) |&gt;\n  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |&gt;\n  arrange(desc(total_vrm))\nNow let’s take a closer look at the MTA New York City Transit, which was the agency with the most total vehicle revenue miles, of approximately 10,800,000,000 miles.\nUSAGE |&gt;   \n  group_by(Agency) |&gt;\n  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |&gt;\n  arrange(desc(total_vrm))\nWhen examining the MTA heavy rail, it can be determined that 180,458,819 trips were taken in May 2024.\nUSAGE$month &lt;- as.character(USAGE$month)  \nUSAGE |&gt;\n  filter(USAGE$Agency == \"MTA New York City Transit\",\n         USAGE$Mode == \"Heavy Rail\",\n         USAGE$month == \"2024-05-01\")\nIn contrast to these high numbers, due to the COVID-19 pandemic, we can see the fall of NYC subway ridership fall between the time of April 2019 and April 2020, with ridership falling from 232,223,929 to 20,254,269, respectively. This points to a difference of 211,969,660 rides.\nUSAGE |&gt; \n  filter(USAGE$Agency == \"MTA New York City Transit\", #2019\n         USAGE$Mode == \"Heavy Rail\",\n         USAGE$month == \"2019-04-01\")\nUSAGE |&gt;\n  filter(USAGE$Agency == \"MTA New York City Transit\", #2020\n         USAGE$Mode == \"Heavy Rail\",\n         USAGE$month == \"2020-04-01\")"
+  },
+  {
+    "objectID": "mp01.html#additional-analysis",
+    "href": "mp01.html#additional-analysis",
+    "title": "Mini-Project #01",
+    "section": "Additional Analysis",
+    "text": "Additional Analysis\nIn contrast to buses, aerial tramways were the transit mode with the least total vehicle miles, with 292,850 miles.\nUSAGE |&gt;\n  group_by(Agency) |&gt;\n  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |&gt;\n  arrange(total_vrm)\nThis is a difference of 49,444,201,238 miles. While this might feel drastic, it makes sense. Aerial tramways, vehicles suspended from a system of cables that are propelled through a suspension system, are not commonly used, which attributes to their low mileage. On the other hand, buses are used extensively, with there being numerous routes that run daily, attributing to their high mileage.\nFollowing this contrast, the agency with the least total vehicle revenue miles was Barnegat Bay Decoy & Baymen’s Museum, with 2,312 miles.\nUSAGE |&gt; \n  group_by(Mode) |&gt;\n  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |&gt;\n  arrange(total_vrm)\nCompared to the MTA, there is a difference of 10,799,997,688 miles. This large difference can be attributed to the vast difference in sizes between the two. The MTA is the largest transportation system in North America. On the other hand, Barnegat is only a 40 acre cultural center meant to preserve the maritime history of the Jersey Shore. The vehicle revenue miles accumulated correlate to the size and population attributed to each agency.\nBecause we’ve established the MTA in NYC as having the largest total vehicle revenue miles, we can examine which location has the second highest average vehicle revenue miles, after the New York / New Jersey area. This turns out to be Denver, Colorado, with 1,565,688 average vehicle revenue miles.\nUSAGE |&gt; \n  group_by(metro_area) |&gt;\n  summarize(average_vrm = mean(vehicle_revenue_miles, na.rm = T)) |&gt;\n  arrange(desc(average_vrm))\nThis is a 244,360 mile difference to NYC, with 1,810,058 miles."
   }
 ]
