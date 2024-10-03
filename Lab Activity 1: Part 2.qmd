@@ -1,0 +1,6 @@
+---
+title: "Lab Activity 1: Part 2"
+author: "Thanh Dao"
+format: revealjs
+editor: visual
+---
