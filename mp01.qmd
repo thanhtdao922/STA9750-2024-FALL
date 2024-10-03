@@ -2,26 +2,37 @@
 title: "Mini-Project #01"
 editor: visual
 ---
+Author: Thanh Dao\
+Updated: October 3rd, 2024
 
 ## Introduction
 
-In this report, you will find the fiscal characteristics of major US public transit systems.
+There is a great variety of transportation systems and modes in America, spanning across land and water. Americans utilize all of them on a daily basis, commuting to wherever they need to go. In this report, the fiscal characteristics of major US public transit systems will be analyzed.
 
-The following table displays the data obtained by the National Transit Database.
+## Obtaining Data
 
-```{r echo=FALSE, message=FALSE}
+This report runs on R; thus, the necessary packages must be installed prior to any data collection or analysis.
+
+```{r echo=TRUE, message=FALSE}
+# Install the necessary R packages
 if(!require("tidyverse")) install.packages("tidyverse")
+library(lubridate)  # added for the my() function
+if(!require("DT")) install.packages("DT")
+library(DT)
+```
 
-# Obtain the Necessary Data
+Now that the necessary packages have been installed, data collection from the [National Transit Database](https://www.transit.dot.gov/ntd) can proceed.
 
-## Fare Revenue
-library(tidyverse)
+```{r echo=TRUE, message=FALSE}
+# Download the "Fare Revenue" Data
 if(!file.exists("2022_fare_revenue.xlsx")){
   download.file("http://www.transit.dot.gov/sites/fta.dot.gov/files/2024-04/2022%20Fare%20Revenue.xlsx", 
                 destfile="2022_fare_revenue.xlsx", 
                 quiet=FALSE, 
                 method="wget")
 }
+
+# Select the columns within the scope of research for this report
 FARES <- readxl::read_xlsx("2022_fare_revenue.xlsx") |>
   select(-`State/Parent NTD ID`, 
          -`Reporter Type`,
@@ -32,13 +43,15 @@ FARES <- readxl::read_xlsx("2022_fare_revenue.xlsx") |>
   filter(`Expense Type` == "Funds Earned During Period") |>
   select(-`Expense Type`)
 
-## Expenses
+# Download the "Expenses" Data
 if(!file.exists("2022_expenses.csv")){
   download.file("https://data.transportation.gov/api/views/dkxx-zjd6/rows.csv?date=20231102&accessType=DOWNLOAD&bom=true&format=true", 
                 destfile="2022_expenses.csv", 
                 quiet=FALSE, 
                 method="wget")
 }
+
+# Select the columns within the scope of research for this report
 EXPENSES <- readr::read_csv("2022_expenses.csv") |>
   select(`NTD ID`, 
          `Agency`,
@@ -50,18 +63,18 @@ EXPENSES <- readr::read_csv("2022_expenses.csv") |>
   summarize(Expenses = sum(Expenses)) |>
   ungroup()
 
-FINANCIALS <- inner_join(FARES, EXPENSES, join_by(`NTD ID`, `Mode`))
+# Combine the selected "Fare Revenue" and "Expenses" Data
+FINANCIALS <- inner_join(FARES, EXPENSES, join_by(`NTD ID`, `Mode`)) 
 
-## Monthly Transit Numbers
-library(tidyverse)
+# Download the "Monthly Transit Numbers" Data
 if(!file.exists("ridership.xlsx")){
   download.file("https://www.transit.dot.gov/sites/fta.dot.gov/files/2024-09/July%202024%20Complete%20Monthly%20Ridership%20%28with%20adjustments%20and%20estimates%29_240903.xlsx", 
                 destfile="ridership.xlsx", 
                 quiet=FALSE, 
                 method="wget")
 }
-library(lubridate)  # added for the my() function
 
+# Select the columns within the scope of research for this report
 TRIPS <- readxl::read_xlsx("ridership.xlsx", sheet="UPT") |>
   filter(`Mode/Type of Service Status` == "Active") |>
   select(-`Legacy NTD ID`, 
@@ -91,22 +104,42 @@ MILES <- readxl::read_xlsx("ridership.xlsx", sheet="VRM") |>
   ungroup() |>
   mutate(month=my(month))
 
+# Combine the selected "Monthly Transit Numbers" Data
 USAGE <- inner_join(TRIPS, MILES) |>
   mutate(`NTD ID` = as.integer(`NTD ID`))
+```
 
-# Tasks
+## Initial Data Table
 
-## Task 1: Create Syntactic Names
-USAGE <- rename(USAGE, "metro_area" = "UZA Name")
-USAGE <- rename(USAGE, "unlinked_passenger_trips" = "UPT")
-USAGE <- rename(USAGE, "vehicle_revenue_miles" = "VRM")
-USAGE <- rename(USAGE, "NTD_ID" = "NTD ID")
+Using the data just obtained from the National Transit Database, the following table can be created:
+
+```{r echo=FALSE, message=FALSE}
+sample_n(USAGE, 1000) |> 
+    mutate(month=as.character(month)) |> 
+    DT::datatable() 
+```
+
+\
+Unfortunately, this data still some flaws that need to be fixed.
+
+## Cleaning the Data
+
+To the average person, "UZA Name" doesn't provide proper context or meaning; thus, it needs to be changed to something people will understand, like "Metro Area." The same can be said about "UPT" and "VRM"; these also need to be changed, as follows: 
+
+```{r echo=TRUE, message=FALSE}
+# Task 1: Create Syntactic Names
+USAGE <- rename(USAGE, "metro_area" = "UZA Name",
+                "unlinked_passenger_trips" = "UPT",
+                "vehicle_revenue_miles" = "VRM",
+                "NTD_ID" = "NTD ID")
 FINANCIALS <- rename(FINANCIALS, "NTD_ID" = "NTD ID")
+```
 
-## Task 2: Recoding the Mode Column
+Now that some column headers have been renamed, focus can be made on the "Mode" column. All of these modes of transport are acronyms that would need to be looked up to be understood. For user ease, they'll be changed as follows: 
 
-# Find the unique Mode codes with unique(USAGE$Mode)
-USAGE <- USAGE |>          # Interpret the Mode column
+```{r echo=TRUE, message=FALSE}
+# Task 2: Recoding the Mode Column
+USAGE <- USAGE |>                    # Interpret the Mode column in "USAGE"
   mutate(Mode = case_when(
     Mode == "AR" ~ "Alaska Railroad",
     Mode == "CB" ~ "Commuter Bus",
@@ -128,7 +161,7 @@ USAGE <- USAGE |>          # Interpret the Mode column
     Mode == "YR" ~ "Hybrid Rail",
     TRUE ~ "Unknown"))
 
-FINANCIALS <- FINANCIALS |>          # Interpret the Mode column (Financials)
+FINANCIALS <- FINANCIALS |>          # Interpret the Mode column in "Financials"
   mutate(Mode = case_when(
     Mode == "AR" ~ "Alaska Railroad",
     Mode == "CB" ~ "Commuter Bus",
@@ -149,12 +182,18 @@ FINANCIALS <- FINANCIALS |>          # Interpret the Mode column (Financials)
     Mode == "VP" ~ "Vanpool",
     Mode == "YR" ~ "Hybrid Rail",
     TRUE ~ "Unknown"))
+```
 
+Unnecessary columns will be removed as well.
+
+```{r echo=TRUE, message=FALSE}
 USAGE <- USAGE |>           # Remove "3 Mode"
   select(-c("3 Mode"))
+```
 
-if(!require("DT")) install.packages("DT")
-library(DT)
+Now that the data is cleaned up, a new table can be established, as follows:\
+
+```{r echo=FALSE, message=FALSE}
 sample_n(USAGE, 1000) |>    # Updated Summary Table
   mutate(month=as.character(month)) |> 
   DT::datatable()
@@ -162,29 +201,35 @@ sample_n(USAGE, 1000) |>    # Updated Summary Table
 
 ## Main Analysis
 
-In this sample, we can determine a few things.
+Using this table, the following analyses can be done.
 
-If we were to examine the *most total vehicle miles through the lens of transit mode*, **buses** had the highest, with 49,444,494,088 miles. 
+The **transit agency with the most total VRM** in this data set can be determined with the following code: 
 
-```
-USAGE |>
-  group_by(Mode) |>
-  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>
-  arrange(desc(total_vrm))
-```
-
-Now let's take a closer look at the **MTA New York City Transit**, which was the *agency with the most total vehicle revenue miles*, of approximately 10,800,000,000 miles. 
-
-```
+```{r echo=TRUE, message=FALSE}
 USAGE |>   
   group_by(Agency) |>
   summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>
-  arrange(desc(total_vrm))
+  arrange(desc(total_vrm)) |>
+  slice(1)
 ```
 
-When examining the **MTA heavy rail**, it can be determined that 180,458,819 trips were taken in *May 2024*.
+Based on this, it can be determined that the [**MTA New York City Transit**](https://new.mta.info/agency/new-york-city-transit) had the most total VRM, of approximately **10,800,000,000 miles**.
 
+Comparatively, a similar code can be used to determine the **transit mode with the most total VRM**: 
+
+```{r echo=TRUE, message=FALSE}
+USAGE |>
+  group_by(Mode) |>
+  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>
+  arrange(desc(total_vrm)) |>
+  slice(1)
 ```
+
+It can be determined that [**buses**](https://en.wikipedia.org/wiki/Bus) had the most total VRM, with **49,444,494,088** miles.
+
+Now, a closer look will be had on the MTA, specifically **the number of trips taken on the NYC Subway in May 2024**: 
+
+```{r echo=TRUE, message=FALSE}
 USAGE$month <- as.character(USAGE$month)  
 USAGE |>
   filter(USAGE$Agency == "MTA New York City Transit",
@@ -192,9 +237,11 @@ USAGE |>
          USAGE$month == "2024-05-01")
 ```
 
-In contrast to these high numbers, due to the **COVID-19 pandemic**, we can see the *fall of NYC subway ridership fall between the time of April 2019 and April 2020*, with ridership falling from 232,223,929 to 20,254,269, respectively. This points to a difference of 211,969,660 rides. 
+Here, in May 2024, **180,458,819** trips were taken. 
 
-```
+While this number is indeed high, it would be interesting to analyze the impact the [COVID-19 pandemic](https://www.cdc.gov/covid/about/index.html) had on NYC Subway ridership. To do so, the **fall of NYC subway ridership between April 2019 and April 2020** needs to be determined:
+
+```{r echo=TRUE, message=FALSE}
 USAGE |> 
   filter(USAGE$Agency == "MTA New York City Transit", #2019
          USAGE$Mode == "Heavy Rail",
@@ -205,46 +252,53 @@ USAGE |>
          USAGE$month == "2020-04-01")
 ```
 
+Based on this information, ridership fell from **232,223,929 in April 2019 to 20,254,269 in April 2020**. This points to a difference of 211,969,660 rides.
+
 ## Additional Analysis
 
-In contrast to buses, **aerial tramways** were the *transit mode with the least total vehicle miles*, with 292,850 miles. 
+Previously, buses were determined to be the transit mode with the most total VRM. It would be interesting to determine the opposite: 
 
+```{r echo=TRUE, message=FALSE}
+USAGE |> 
+  group_by(Mode) |>   # Look through the lens of transportation mode
+  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>   # Obtain the total VRM per mode
+  arrange(total_vrm) |>   # Ascending order
+  slice(1)   # Obtain the top data point
 ```
+
+In contrast to buses, [**aerial tramways**](https://en.wikipedia.org/wiki/Aerial_tramway) were the **transit mode with the least total VRM**, with **292,850** miles.
+
+This is a difference of 49,444,201,238 miles. While this might feel drastic, it makes sense. Aerial tramways, vehicles suspended from a system of cables that are propelled through a suspension system, are not commonly used, which attributes to their low mileage. On the other hand, buses are used extensively, with there being numerous routes that run daily, attributing to their high mileage.
+
+Following this contrast, the **agency with the least total VRM** was [**Barnegat Bay Decoy & Baymen's Museum**](https://tuckertonseaport.org/about/), with **2,312** miles.
+
+```{r echo=TRUE, message=FALSE}
 USAGE |>
-  group_by(Agency) |>
-  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>
-  arrange(total_vrm)
+  group_by(Agency) |>   # Look through the lens of transportation agency   
+  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>   # Obtain the total VRM per agency
+  arrange(total_vrm) |>   # Ascending order
+  slice(1)   # Obtain the top data point
 ```
 
-This is a difference of 49,444,201,238 miles. While this might feel drastic, it makes sense. Aerial tramways, vehicles suspended from a system of cables that are propelled through a suspension system, are not commonly used, which attributes to their low mileage. On the other hand, buses are used extensively, with there being numerous routes that run daily, attributing to their high mileage. 
+Compared to the MTA, there is a difference of 10,799,997,688 miles. This large difference can be attributed to the vast difference in sizes between the two. The MTA is the largest transportation system in North America. On the other hand, Barnegat is only a 40 acre cultural center meant to preserve the maritime history of the Jersey Shore. The VRM accumulated correlate to the size and population attributed to each agency.
 
-Following this contrast, the *agency with the least total vehicle revenue miles* was [**Barnegat Bay Decoy & Baymen's Museum**](https://tuckertonseaport.org/about/), with 2,312 miles. 
+Because the MTA in NYC has been established as having the largest VRM, examining **which location has the second highest average vehicle revenue miles**, after the New York / New Jersey area, would be interesting. 
 
-```
+```{r echo=TRUE, message=FALSE}
 USAGE |> 
-  group_by(Mode) |>
-  summarize(total_vrm = sum(vehicle_revenue_miles, na.rm = T)) |>
-  arrange(total_vrm)
+  group_by(metro_area) |>   # Look through the lens of location
+  summarize(average_vrm = mean(vehicle_revenue_miles, na.rm = T)) |> # Obtain the average VRM per location
+  arrange(desc(average_vrm)) |>   # Descending order
+  slice(2)   # Obtain the second data point
 ```
 
-Compared to the MTA, there is a difference of 10,799,997,688 miles. This large difference can be attributed to the vast difference in sizes between the two. The MTA is the largest transportation system in North America. On the other hand, Barnegat is only a 40 acre cultural center meant to preserve the maritime history of the Jersey Shore. The vehicle revenue miles accumulated correlate to the size and population attributed to each agency. 
-
-Because we've established the MTA in NYC as having the largest total vehicle revenue miles, we can examine *which location has the second highest average vehicle revenue miles*, after the New York / New Jersey area. This turns out to be **Denver, Colorado**, with 1,565,688 average vehicle revenue miles. 
-
-```
-USAGE |> 
-  group_by(metro_area) |>
-  summarize(average_vrm = mean(vehicle_revenue_miles, na.rm = T)) |>
-  arrange(desc(average_vrm))
-```
-
-This is a 244,360 mile difference to NYC, with 1,810,058 miles. 
+This turns out to be [**Denver, Colorado**](https://www.google.com/maps/place/denver+colorado/data=!4m2!3m1!1s0x876b80aa231f17cf:0x118ef4f8278a36d6?sa=X&ved=1t:242&ictx=111), with **1,565,688** average VRM. This is a 244,360 mile difference to NYC, with 1,810,058 miles.
 
 ## Farebox Recovery Analysis
 
-The following table displays the data obtained in 2022 by the National Transit Database.
+To fully analyze the farebox recovery data, a new table must be created from the previous table, narrowing down the data to specifically 2022. First, the obtained data needs to be edited to create the summary table. 
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=TRUE, message=FALSE}
 ## Task 5: Table Summarization
 USAGE_2022_ANNUAL <- USAGE |>
   mutate(year = year(month)) |>
@@ -267,72 +321,82 @@ USAGE_AND_FINANCIALS <- left_join(USAGE_2022_ANNUAL,
                                   join_by(NTD_ID, Mode),
                                   relationship = "many-to-many") |>
   drop_na()
+```
 
-if(!require("DT")) install.packages("DT")
-library(DT)
+Second, the table can be created.
+
+```{r echo=FALSE, message=FALSE}
 sample_n(USAGE_AND_FINANCIALS, 1000) |>    # Updated Summary Table
   DT::datatable()
 ```
 
-When analyzing the farebox recovery, we can see that the *transit system with the most unlinked passenger trips in 2022* was the **MTA New York CIty Transit**, specifically the **heavy rail**, with 1,793,073,801 trips.
-```
-mostUPT2022 <- USAGE_AND_FINANCIALS |> 
-  group_by(Agency, Mode) |>
-  filter(total_upt > 400000) |>
-  summarize(total_upt2022 = sum(total_upt)) |>
-  arrange(desc(total_upt2022))
-head(mostUPT2022, n=1)
+\
+When analyzing the farebox recovery, it can be determined that the **transit system with the most UPT in 2022** was the **MTA New York CIty Transit**, specifically the **heavy rail**, with 1,793,073,801 trips.
+
+```{r echo=TRUE, message=FALSE}
+mostUPT2022 <- USAGE_AND_FINANCIALS |>   # Create a new variable
+  group_by(Agency, Mode) |>   # Look through the lens of Agency and Mode
+  filter(total_upt > 400000) |>  # Major Transit systems
+  summarize(total_upt2022 = sum(total_upt)) |>  # Obtain the total UPT per what was grouped
+  arrange(desc(total_upt2022))  # Descending order
+head(mostUPT2022, n=1)   # Get only the wanted data
 ```
 
-However, if we were to examine the *transit system with the highest farebox recovery*, it would be the **Anaheim Transportation Network**, specifically the **bus**, with 0.865. 
-```
-highestfarebox <- USAGE_AND_FINANCIALS |> 
-  group_by(Agency, Mode) |>
-  filter(total_upt > 400000) |>
-  summarize(highestfarebox = sum(`Total Fares`) / sum (Expenses)) |>
-  arrange(desc(highestfarebox))
-head(highestfarebox, n=1)
+However, if examining the **transit system with the highest farebox recovery**, it would be the [**Anaheim Transportation Network**](https://rideart.org/), specifically the **bus**, with 0.865.
+
+```{r echo=TRUE, message=FALSE}
+highestfarebox <- USAGE_AND_FINANCIALS |>   # Create a new variable 
+  group_by(Agency, Mode) |>   # Look through the lens of Agency and Mode
+  filter(total_upt > 400000) |>  # Major Transit systems
+  summarize(highestfarebox = sum(`Total Fares`) / sum (Expenses)) |>  # Obtain the ratio of total fares to expenses
+  arrange(desc(highestfarebox))  # Descending order
+head(highestfarebox, n=1)   # Get only the wanted data
 ```
 
-Moving on, when examining the *transit system with the lowest expenses per unlinked passenger trip*, it would be the **University of Georgia bus system**, with $14.90 per trip. 
-```
-lowestexpenses <- USAGE_AND_FINANCIALS |>
-  group_by(Agency, Mode) |>
-  filter(total_upt > 400000) |>
-  summarize(lowestexpenses = sum(Expenses) / sum(total_upt)) |>
-  arrange(desc(lowestexpenses))
-tail(lowestexpenses, n=1)
-```
-Comparatively, the *transit system with lowest expenses per vehicle revenue mile* is the **Interurban Transit Partnership bus system**, with $84.10 per mile. 
-```
-lowestexpensesvrm <- USAGE_AND_FINANCIALS |> 
-  group_by(Agency, Mode) |>
-  filter(total_upt > 400000) |>
-  summarize(lowestexpensesvrm = sum(Expenses) / sum(total_vrm)) |>
-  arrange(desc(lowestexpensesvrm))
-tail(lowestexpensesvrm, n=1)
+Moving on, when examining the **transit system with the lowest expenses per UPT**, it would be the [**University of Georgia**](https://www.uga.edu/) **bus system**, with \$14.90 per trip.
+
+```{r echo=TRUE, message=FALSE}
+lowestexpenses <- USAGE_AND_FINANCIALS |>   # Create a new variable
+  group_by(Agency, Mode) |>   # Look through the lens of Agency and Mode
+  filter(total_upt > 400000) |>  # Major Transit systems
+  summarize(lowestexpenses = sum(Expenses) / sum(total_upt)) |>   # Obtain the ratio of expenses to UPT
+  arrange(desc(lowestexpenses))   # Descending order
+tail(lowestexpenses, n=1)   # Get only the wanted data
 ```
 
-Meanwhile, the *transit system with the highest total fares per unlinked passenger trip* is the **Metro-North Commuter Railroad Company**, with the **bus**, at $98.70 per trip. 
-```
-highestfares <- USAGE_AND_FINANCIALS |>
-  group_by(Agency, Mode) |>
-  filter(total_upt > 400000) |>
-  summarize(highestfares = sum(`Total Fares`) / sum(total_upt)) |>
-  arrange(desc(highestfares))
-head(highestfares, n=1)
+Comparatively, the **transit system with lowest expenses per VRM** is the [**Interurban Transit Partnership**](https://www.ridetherapid.org/about-the-rapid) **bus system**, with \$84.10 per mile.
+
+```{r echo=TRUE, message=FALSE}
+lowestexpensesvrm <- USAGE_AND_FINANCIALS |>   # Create a new variable 
+  group_by(Agency, Mode) |>   # Look through the lens of Agency and Mode
+  filter(total_upt > 400000) |>  # Major Transit systems
+  summarize(lowestexpensesvrm = sum(Expenses) / sum(total_vrm)) |>   # Obtain the ratio of expenses to VRM
+  arrange(desc(lowestexpensesvrm))   # Descending order
+tail(lowestexpensesvrm, n=1)   # Get only the wanted data
 ```
 
-Comparatively, the *transit system with highest total fares per vehicle revenue mile* is the **Washington State Ferries** with the **ferryboat**, at $937 per mile. 
+Meanwhile, the **transit system with the highest total fares per UPT** is the [**Metro-North Commuter Railroad Company**](https://new.mta.info/agency/metro-north-railroad), with the **bus**, at \$98.70 per trip.
+
+```{r echo=TRUE, message=FALSE}
+highestfares <- USAGE_AND_FINANCIALS |>   # Create a new variable 
+  group_by(Agency, Mode) |>   # Look through the lens of Agency and Mode
+  filter(total_upt > 400000) |>  # Major Transit systems
+  summarize(highestfares = sum(`Total Fares`) / sum(total_upt)) |>   # Obtain the ratio of total fares to UPT
+  arrange(desc(highestfares))   # Descending order
+head(highestfares, n=1)   # Get only the wanted data
 ```
-highestfaresvrm <- USAGE_AND_FINANCIALS |> 
-  group_by(Agency, Mode) |>
-  filter(total_upt > 400000) |>
-  summarize(highestfaresvrm = sum(`Total Fares`) / sum(total_vrm)) |>
-  arrange(desc(highestfaresvrm))
-head(highestfaresvrm, n=1)
+
+Comparatively, the **transit system with highest total fares per VRM** is the [**Washington State Ferries**](https://wsdot.wa.gov/travel/washington-state-ferries) with the [**ferryboat**](https://en.wikipedia.org/wiki/Ferry), at \$937 per mile.
+
+```{r echo=TRUE, message=FALSE}
+highestfaresvrm <- USAGE_AND_FINANCIALS |>   # Create a new variable
+  group_by(Agency, Mode) |>   # Look through the lens of Agency and Mode
+  filter(total_upt > 400000) |>   # Major Transit systems
+  summarize(highestfaresvrm = sum(`Total Fares`) / sum(total_vrm)) |>  # obtain the ratio of total fares to VRM
+  arrange(desc(highestfaresvrm))   # Descending order
+head(highestfaresvrm, n=1)   # Get only the wanted data
 ```
 
 ## Conclusions
 
-Overall, the most efficient transit system in the country is the **MTA New York City Transit**. It is the largest North American transit system, and has proven that it is as efficient as its size. It has the *most total and average vehicle revenue miles*. Additionally, in 2022, it was the transit system with the *most unlinked passenger trips*. 
+Overall, the most efficient transit system in the country is the **MTA New York City Transit**. It is the largest North American transit system, and has proven that it is as efficient as its size. It has the **most total and average vehicle revenue miles**. Additionally, in 2022, it was the transit system with the **most unlinked passenger trips**.
