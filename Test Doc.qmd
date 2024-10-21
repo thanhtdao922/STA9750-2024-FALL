@@ -1,6 +1,0 @@
----
-title: "Test Document"
-editor: visual
----
-
-This document was made to test certain aspects of the course as things move forward. 
