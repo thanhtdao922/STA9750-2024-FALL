@@ -4,7 +4,7 @@ editor: visual
 ---
 
 Author: Thanh Dao\
-Updated: October 17th, 2024 \@ 9:30PM
+Updated: October 20th, 2024 \@ 11:59PM
 
 # Introduction
 
@@ -831,9 +831,9 @@ alive_people <- NAME_BASICS |>
 print(alive_people)
 ```
 
-We can see that 17 are still alive, so we will need legal counsel. 
+We can see that 17 are still alive, so we will need legal counsel.
 
-It would also be fun to include actors from the original movie in the project as a callback for the fans. 
+It would also be fun to include actors from the original movie in the project as a callback for the fans.
 
 ```{r echo=TRUE, message=FALSE}
 associated_actors <- TITLE_PRINCIPALS |>
@@ -848,7 +848,7 @@ alive_actors <- NAME_BASICS |>
 print(alive_actors)
 ```
 
-Based on this code, we will try to request for [**Keanu Reeves**](https://en.wikipedia.org/wiki/Keanu_Reeves) and [**Laurence Fishburne**](https://en.wikipedia.org/wiki/Laurence_Fishburne) to have a cameo role of sorts in our project. 
+Based on this code, we will try to request for [**Keanu Reeves**](https://en.wikipedia.org/wiki/Keanu_Reeves) and [**Laurence Fishburne**](https://en.wikipedia.org/wiki/Laurence_Fishburne) to have a cameo role of sorts in our project.
 
 # Putting it Together
 
@@ -872,4 +872,4 @@ The marketing department has requested a classic 90's style teaser for them to c
 
 "From director **Sonia Bhatia**, the visionary mind behind **Yudhra**; and from actors **Kevin Spacey**, Hollywood icon and beloved star of [**American Beauty**](https://en.wikipedia.org/wiki/American_Beauty_(1999_film)), and **Elijah Wood** from [**The Lord of the Rings**](https://en.wikipedia.org/wiki/The_Lord_of_the_Rings_(film_series)) comes the timeless tale of **The Matrix**, a story of **dystopian realities, relentless pursuit, and cutting-edge action**. Coming soon to a theater near you!"
 
-The sample movie poster can be found [here](https://drive.google.com/file/d/1ubG3gkRGHh9EKQaSPsEMJyMwHEvOc8Mh/view?usp=sharing). 
+The sample movie poster can be found [here](https://drive.google.com/file/d/1ubG3gkRGHh9EKQaSPsEMJyMwHEvOc8Mh/view?usp=sharing).
