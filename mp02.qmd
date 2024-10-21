@@ -1,5 +1,5 @@
 ---
-title: "Mini-Project #02"
+title: "mp02"
 editor: visual
 ---
 
