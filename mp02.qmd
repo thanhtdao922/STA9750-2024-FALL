@@ -1,10 +1,10 @@
 ---
 title: "Mini-Project #02"
-format: html 
 editor: visual
 ---
+
 Author: Thanh Dao\
-Updated: October 21st, 2024 \@ 7:27PM
+Updated: October 22nd, 2024 \@ 1:25PM
 
 # Introduction
 

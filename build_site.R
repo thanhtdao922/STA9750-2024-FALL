@@ -6,7 +6,7 @@ if(!require("quarto")){
 }
 library(quarto)
 if(!quarto::quarto_binary_sitrep()){
-  stop("Something is wrong with your quarto installation.")
+  stop("Something is wrong with your quarto installation. Try again.")
 }
 quarto::quarto_render(".")
 system("git add docs/*")
