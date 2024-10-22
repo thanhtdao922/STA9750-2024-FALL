@@ -2,11 +2,12 @@
 title: "Mini-Project #02"
 editor: visual
 format:
-  html: default
+  html:
+    output-dir: docs
 ---
 
 Author: Thanh Dao\
-Updated: October 22nd, 2024 \@ 1:25PM
+Updated: October 22nd, 2024 \@ 2:15PM
 
 # Introduction
 
