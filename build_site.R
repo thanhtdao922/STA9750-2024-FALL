@@ -1,4 +1,6 @@
 #!/usr/bin/env Rscript
+# Install quarto
+
 if(!require("quarto")){
   install.packages("quarto")
 }

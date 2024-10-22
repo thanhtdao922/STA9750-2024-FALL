@@ -5,7 +5,7 @@ project:
 website:
   title: "STA 9750 2024 Submission Material"
   description:
-    Course Projects for STA 9750 at Baruch College
+    Course Projects for STA 9750 at CUNY Baruch College
   site-url: "https://thanhtdao922.github.io/STA9750-2024-FALL/"
   navbar:
     background: primary
