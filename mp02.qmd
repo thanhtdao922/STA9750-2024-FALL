@@ -1,5 +1,6 @@
 ---
 title: "Mini-Project #02"
+format: html 
 editor: visual
 ---
 Author: Thanh Dao\
