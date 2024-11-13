@@ -1,0 +1,736 @@
+---
+title: "Mini-Project #03"
+editor: visual
+format:
+  html:
+    output-dir: docs
+---
+
+
+
+Author: Thanh Dao\
+Updated: November 12th, 2024 \@ 6:40PM
+
+# Introduction
+
+Voting in the United States is a major event, especially when it comes to the presidential elections. With the [2024 Presidential election](https://en.wikipedia.org/wiki/2024_United_States_presidential_election) coming up (as of the time this report is written), it would be interesting to further look into some political data.
+
+This report will investigate the claim that the [US Electoral College](https://en.wikipedia.org/wiki/United_States_Electoral_College) systematically biases election results away from the [*vox populi*](https://en.wikipedia.org/wiki/Vox_populi), serving as a political fact-check.
+
+Basically, historical congressional election data will be used to see how the outcome of US Presidential elections would have changed under different allocation rules.
+
+# Background Information
+
+Before we dive into anything, it's important to provide some background information on the topic.
+
+The basic rules of electing the President are set up by the [US Constitution](https://constitution.congress.gov/constitution/), specifically in [Section I, Article II](https://constitution.congress.gov/constitution/article-2/#article-2-section-1-clause-2).
+
+The president is the candidate that receives the majority of electoral college votes, where each state gets $R + 2$ electoral college votes. $R$ is the number of representatives the state has in the [US House of Representatives](https://en.wikipedia.org/wiki/United_States_House_of_Representatives). The allocation of these votes per state are not set in stone, and have historically changed depending on the state.
+
+It is important to note that no state uses truly proportionate state wide representation.
+
+# Obtaining Necessary Data
+
+## `R` Packages
+
+First, we will download the necessary `R` packages that will be used throughout the report.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(sf)
+```
+
+
+
+## Data 1: US House Election Votes (1976 - 2022)
+
+The first data source we will use is the [**MIT Election Data Science Lab**](https://electionlab.mit.edu/), which collects votes from all biennial congressional races in all 50 states, as well as the statewide presidential vote counts.
+
+The data will be downloaded manually as `csv` files through a web browser, due to it requiring the user's contact information.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Load the biennial congressional races data
+congress_races <- readr::read_csv("1976-2022-house.csv")
+
+# Load the presidential races data
+pres_races <- readr::read_csv("1976-2020-president.csv")
+```
+
+
+
+## Data 2: Congressional Boundary Files (1976 - 2012)
+
+We will now automate the download process for `zip` files for all US Congressional districts from 1976 to 2012. They will be obtained from [here](https://cdmaps.polisci.ucla.edu/).
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+get_file <- function(fname){
+  BASE_URL <- "https://cdmaps.polisci.ucla.edu/shp/"
+  fname_ext <- paste0(fname, ".zip")
+  fname_ext1 <- paste0(fname, ".shp")
+  fname_extunzip <- gsub(".zip$", "", fname_ext)
+  subfolder <- "districtShapes"
+  if(!file.exists(fname_ext)){
+    FILE_URL <- paste0(BASE_URL, fname_ext)
+    download.file(FILE_URL, 
+                  destfile = fname_ext)
+  }
+  # Unzip contents and save
+  unzip(zipfile = fname_ext, exdir = fname_extunzip)
+  # Define file Path
+  shapefile_path <- file.path(fname_extunzip, subfolder, fname_ext1)
+  # Read .shp
+  read_sf(shapefile_path)
+}
+
+# Download files by iterating through
+start_congress = 95
+end_congress = 114
+for (i in start_congress:end_congress) {
+  district_name <- sprintf("districts%03d", i) 
+  district_data <- get_file(district_name)
+  assign(district_name, district_data, envir = .GlobalEnv) 
+}
+```
+
+
+
+## Data 3: Congressional Boundary Files (2014 - Present)
+
+Now, we will automate the download process for US Census Bureau `shp` from [here](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html); specifically the `CD` directory found in the `FTP Archive`.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+get_congress_file <- function(fname, year){
+  BASE_URL <- sprintf("https://www2.census.gov/geo/tiger/TIGER%d/CD/", year)
+  fname_ext <- paste0(fname, ".zip")
+  fname_ext1 <- paste0(fname, ".shp")
+  fname_extunzip <- gsub(".zip$", "", fname_ext)
+  
+  # Download File
+  if(!file.exists(fname_ext)){
+    FILE_URL <- paste0(BASE_URL, fname_ext)
+    download.file(FILE_URL, 
+                  destfile = fname_ext)
+  }
+  # Unzip contents and save
+  unzip(zipfile = fname_ext, exdir = fname_extunzip)
+  # Define File Path
+  shapefile_path <- file.path(fname_extunzip, fname_ext1)
+  # Read .shp
+  read_sf(shapefile_path)
+}
+
+# Download file for each district by iterating through each year
+base_year = 2022
+base_congress = 116  # Congress number for 2012
+for (i in 0:10) { 
+  year <- base_year - i
+  if (year >= 2018) {congress <- 116} 
+  else if (year >= 2016) {congress <- 115} 
+  else if (year >= 2014) {congress <- 114} 
+  else if (year == 2013) {congress <- 113} 
+  else if (year == 2012) {congress <- 112}
+  district_name <- sprintf("tl_%d_us_cd%d", year, congress)
+  district_data <- get_congress_file(district_name, year) 
+  assign(district_name, district_data, envir = .GlobalEnv)  
+  }
+```
+
+
+
+# Initial Exploration of Vote Count Data
+
+Now that we've successfully downloaded all of the data, we can explore what is available.
+
+## Seats in the US House of Representatives
+
+First, we'll analyze the seats in the US House of Representatives. Specifically, we want to look at which states have gained and lost the most seats between 1976 and 2022.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Only look at the years 1976 and 2022
+filtered_c <- congress_races |>
+  filter(year %in% c(1976, 2022))
+
+# Count the number of unique candidates / state / year
+seats_by_state <- filtered_c |>
+  group_by(year, state) |>
+  summarize(seats = n_distinct(candidate), 
+            .groups = "drop")
+
+# Add a column for seats in 1976 + 2022
+seats_c <- seats_by_state |>
+  pivot_wider(names_from = year, 
+              values_from = seats,
+              names_prefix = "seats_")
+
+# Calculate change in # of seats
+seats_c <- seats_c |>
+  mutate(seat_change = seats_2022 - seats_1976)
+
+# States with most gained / lost seats
+gained_most <- seats_c |>
+  filter(seat_change == max(seat_change, 
+                            na.rm = TRUE))
+lost_most <- seats_c |>
+  filter(seat_change == min(seat_change,
+                            na.rm = TRUE))
+
+# Data tables
+datatable(setNames(gained_most,
+                   c("State", "1976 Seats", "2022 Seats", "Difference")))
+datatable(setNames(lost_most,
+                   c("State", "1976 Seats", "2022 Seats", "Difference")))
+```
+
+
+
+We can see that **Florida gained the most seats**, with it having 27 seats in 1976 and 72 in 2022, pointing to a seat change of $45$. On the other hand, **New York lost the most seats**, with it having 110 seats in 1976 and 58 in 2022, pointing to a seat change of $-52$.
+
+## The "Fusion" Voting System
+
+New York uses a unique voting system called fusion voting. [Fusion voting](https://ballotpedia.org/Fusion_voting) is a system where one candidate can appear on multiple lines of the ballot, and all of these votes are totaled. This system has changed the outcome of many elections, compared to if candidates only received the votes from their major party lines, rather than the total number of votes across all lines.
+
+We're going to find which elections would have had a different result.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Filter for NY
+ny_elections <- congress_races |>
+  filter(state == "NEW YORK")
+
+# Identify major party votes
+ny_major_party_votes <- ny_elections |>
+  mutate(major_party_line = case_when(
+    party == "DEMOCRAT" ~ "DEMOCRAT",
+    party == "REPUBLICAN" ~ "REPUBLICAN",
+    TRUE ~ "OTHER" # NA or other parties
+  )) |>
+  filter(major_party_line != "OTHER") |> # No minor parties
+  group_by(year, candidate, major_party_line) |> # Sum major
+  summarize(major_party_votes = sum(candidatevotes),
+            .groups = "drop")
+
+# Merge with total votes
+election_results <- ny_elections |>
+  group_by(year, candidate) |>
+  summarize(total_votes = sum(candidatevotes), 
+            .groups = "drop") |>
+  left_join(ny_major_party_votes, 
+            by = c("year", "candidate"))
+
+# Elections with diff outcome
+changed_outcomes <- election_results |>
+  group_by(year) |> 
+  # Rank by actual total votes
+  arrange(desc(total_votes)) |> 
+  # Mark actual winner
+  mutate(actual_winner = candidate == first(candidate)) |> 
+  # Rank by major party votes only
+  arrange(desc(major_party_votes)) |> 
+  # Mark hypothetical winner
+  mutate(hypothetical_winner = candidate == first(candidate)) |>
+  # Filter for diff outcomes
+  filter(actual_winner != hypothetical_winner) |>
+  select(year, 
+         candidate, 
+         total_votes, 
+         major_party_votes, 
+         actual_winner, 
+         hypothetical_winner)
+
+# Data tables
+datatable(setNames(changed_outcomes,
+                   c("Year", "Candidate", "Total Votes",
+                     "Major Party Votes", "Won?", "Would Have Won?")),
+          options = list(pageLength = 10, 
+                         autoWidth = TRUE))
+```
+
+
+
+This table displays the elections where fusion voting changed the outcome. The candidates shown did not win the actual election outcome, but would have won if only their votes from the major party line were counted.
+
+## Presidential vs Congressional Candidates
+
+It would be interesting to analyze whether presidential candidates tend to run ahead of or behind congressional candidates from the same party in each state, which can be done with the following code:
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Aggregate congressional votes by state, year, party
+congress_agg <- congress_races |>
+  group_by(year, state, party) |>
+  summarize(total_congress_votes = sum(candidatevotes),
+            .groups = "drop")
+
+# Filter for Dem / Rep for simplicity's sake
+pres_races_filtered <- pres_races |>
+  filter(party_simplified %in% c("DEMOCRAT",
+                                 "REPUBLICAN"))
+
+# Join by year, state, party
+combined_data <- pres_races_filtered |>
+  inner_join(congress_agg, by = c("year",
+                                  "state",
+                                  "party_simplified" = "party")) |>
+  mutate(vote_difference = candidatevotes - total_congress_votes) |>
+  select("year", 
+         "state", 
+         "candidate", 
+         "candidatevotes", 
+         "totalvotes", 
+         "party_simplified", 
+         "total_congress_votes", 
+         "vote_difference")
+
+# Data tables
+datatable(setNames(combined_data,
+                   c("Year", "State", "Candidate", 
+                     "# of Votes", "Total # of Votes",
+                     "Party", "Congress Votes", "Difference")),
+          options = list(pageLength = 10, 
+                         autoWidth = TRUE))
+```
+
+
+
+This table shows if a presidential candidate got more or less votes in a given state than all of the congressional candidates in their party and the state. If the number under `Difference` is positive, the presidential candidate had more; if it is negative, the presidential candidate had less.
+
+### Trend over Time
+
+We can now see if presidential candidates have tended to run ahead or behind congressional candidates historically.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Average trend over time
+trend_over_time <- combined_data |>
+  group_by(year) |>
+  summarize(avg_vote_diff = mean(vote_difference,
+                                       na.rm = TRUE))
+
+# Line graph
+ggplot(trend_over_time,
+       aes(x = year,
+           y = avg_vote_diff)) +
+  geom_line(color = "blue") +
+  geom_smooth(method = "lm",
+              color = "red",
+              se = FALSE) +
+  labs(title = "Trend of Presidential Vote Share vs Congressional Vote Share Over Time",
+       x = "Year",
+       y = "Average Vote Difference") +
+  theme_minimal()
+```
+
+
+
+The average vote difference is somewhat all over the place; however, with the linear line displayed, we can see there is a slight upward trend. This suggests that **over time, presidential candidates are generally receiving a *higher* share of votes relative to their congressional counterparts in the same state and party**.
+
+### Trend by State
+
+We're now going to observe if the trend differs by state.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Trend by state + party
+trend_by_state <- combined_data |>
+  group_by(state) |>
+  summarize(avg_vote_difference = round(mean(vote_difference,
+                                       na.rm = TRUE), 3)) |>
+  arrange(desc(avg_vote_difference))
+
+# Data table
+datatable(setNames(trend_by_state,
+                   c("State", "Average Difference")),
+          options = list(pageLength = 10,
+                         autoWidth = TRUE))
+```
+
+
+
+Out of the states, **Florida** has the greatest average vote difference, with $426,701.292$ votes. **Maryland** has the least, with $-110466.296$ votes. This points to the presidential candidates in Florida tending to receive more votes than their congressional counterparts. In Maryland, the opposite is true, where they receive less votes than their congressional counterparts.
+
+### Trend by Party
+
+We're now going to observe if the trend differs by party.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Trend by state + party
+trend_by_party <- combined_data |>
+  group_by(party_simplified) |>
+  summarize(avg_vote_differences = round(mean(vote_difference,
+                                       na.rm = TRUE), 3)) |>
+  arrange(desc(avg_vote_differences))
+
+# Data table
+datatable(setNames(trend_by_party,
+                   c("Party", "Average Difference")))
+```
+
+
+
+**Republicans** have an overwhelming large difference in average votes, with **$88,082.336$ votes**, compared to Democrats, with $22,697.968$ votes. This suggests that **Republican presidential candidates are generally receiving a *higher* share of votes relative to their congressional counterparts.**
+
+### Outliers
+
+We're now going to see if there were any presidential candidates who were especially popular or unpopular, relative to their party's congressional candidates.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Group by presidential candidate, calculate avg vote diff from congress
+pres_pop <- combined_data |>
+  group_by(year, candidate, party_simplified) |>
+  summarize(av_vote_diffs = round(mean(vote_difference, na.rm = TRUE), 3)) |>
+  ungroup() |>
+  slice_max(order_by = av_vote_diffs, n = 5)
+
+# Data table
+datatable(setNames(pres_pop,
+                   c("Year", "Candidate", "Party", "Average Difference")),
+          options = list(pageLength = 10, autoWidth = TRUE))
+```
+
+
+
+This table displays the top 5 most popular presidential candidates, based on the average vote difference compared to congressional candidates. The top candidate is [**Ronald Reagan**](https://en.wikipedia.org/wiki/Ronald_Reagan), with $311,941.04$ votes.
+
+# Importing and Plotting Shape File Data
+
+We will now move on to create some maps. In Data 2 from above, we downloaded `zip` files. Now, we will extract the `shp` files within them in order to create said maps using the following created function.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+
+```
+
+
+
+Now, we can create a [chloropleth map](https://en.wikipedia.org/wiki/Choropleth_map), which is a type of map commonly used to display election results. Specifically, we will create a chloropleth map of the 2000 electoral college results.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Focus on the main 2 candidates: Bush and Gore
+election_2000 <- pres_races |>
+  filter(year == 2000) |>
+  filter(candidate %in% c("BUSH, GEORGE W.", "GORE, AL")) |>
+  group_by(state) |>
+  summarize(winner = if_else(sum(candidatevotes[candidate == "BUSH, GEORGE W."]) > 
+                               sum(candidatevotes[candidate == "GORE, AL"]),
+                             "Bush", "Gore"),
+            winning_party = case_when(
+              winner == "Bush" ~ "Republican",
+              winner == "Gore" ~ "Democrat"
+            )) |>
+  ungroup()
+
+# .shp + uppercase
+districts106$STATENAME <- toupper(districts106$STATENAME)
+
+district_election_2000 <- left_join(districts106, 
+                                    election_2000, 
+                                    by = c("STATENAME" = "state"), 
+                                    relationship = "many-to-many")
+
+#mainland USA
+main_us <- district_election_2000 |> 
+  filter(!STATENAME %in% c("ALASKA", "HAWAII"))
+
+ggplot(main_us, aes(geometry = geometry, fill = winning_party)) +
+  geom_sf() + 
+  scale_fill_manual(values = c("Republican" = "red", "Democrat" = "blue")) +
+  theme_minimal() +
+  labs(title = "U.S. Presidential Election Results by State in 2000",
+       fill = "Winning Party")
+```
+
+
+
+We can also create an animated version with the following code:
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+
+```
+
+
+
+# Comparing the Effects of ECV Allocation Rules
+
+With all of this data established, we'll go through and assign each state with their electoral college vote count according to different strategies. This count will displayed in a table as the "winning" candidate, along with their corresponding votes.
+
+Before we do this, we must find out the number of electoral college votes each state is given in each election year.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+ecv_by_state <- congress_races |>
+  group_by(year, state) |>
+  summarize(total_reps = n_distinct(district)) |>
+  mutate(ecv = total_reps + 2) |>
+  select(year, state, ecv)
+
+# Data table 
+datatable(setNames(ecv_by_state,
+                  c("Year", "State", "ECV")),
+          options = list(pageLength = 10, 
+                         autoWidth = TRUE))
+```
+
+
+
+This table just displays the ECV count per state in each election year, and will be used for the following calculations. 
+
+## 1. State-Wide Winner-Take-All
+
+In a state-wide winner-take-all strategy, the state will award all $R + 2$ electoral college votes to the winner of their state-wide popular vote. Basically, whichever candidate receives the most votes in the state wins all the electoral votes.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Candidate with the most votes each year in each state
+state_winner_take_all <- pres_races |>
+  group_by(year,
+           state,
+           candidate) |>
+  summarize(total_votes = sum(candidatevotes),
+            .groups = "drop") |>
+  group_by(year, state) |>
+  slice_max(order_by = total_votes,
+            n=1,
+            with_ties = FALSE) |>
+  rename(winner = candidate)
+
+# Find which candidate gest the most electoral votes
+state_winner_take_all <- state_winner_take_all |>
+  left_join(ecv_by_state,
+            by = c("year", "state")) |>
+  group_by(year, winner) |>
+  summarize(total_ecv = sum(ecv)) |>
+  slice_max(order_by = total_ecv,
+            n = 1,
+            with_ties = FALSE)
+
+# Data table
+datatable(setNames(state_winner_take_all, 
+                   c("Year", "Winning Candidate", "ECVs")),
+          options = list(pageLength = 10,
+                         autoWidth = TRUE))
+```
+
+
+
+## 2. District-Wide Winner-Take-All and State-Wide "At Large" Votes
+
+In a district-wide winner-take-all strategy, each district electoral vote is given to the district winner, and the candidate that wins the popular vote in the state gets the remaining 2.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Find # of districts each party won
+# This represents ECV won in each state
+district_winner <- congress_races |>
+  group_by(year, state, district) |>
+  slice_max(order_by = candidatevotes,
+            n = 1,
+            with_ties = FALSE) |>
+  select(year, 
+         state, 
+         district, 
+         party) |>
+  group_by(year, state, party) |>
+  summarize(districts_won = n())
+
+# Popular vote winner in the state
+pop_winner <- congress_races |>
+  group_by(year, state) |>
+  slice_max(order_by = candidatevotes,
+            n = 1,
+            with_ties = FALSE) |>
+  select(year, state, party) |>
+  add_column(pop_votes = 2)
+
+# Total ECV presidential party received in the state
+district_wide_winner <- district_winner |>
+  left_join(pop_winner,
+            by = c("year", "state", "party")) |>
+  mutate(across(where(is.numeric), 
+                ~ ifelse(is.na(.), 0, .))) |>
+  mutate(total_electoral = districts_won + pop_votes) |>
+  select(-districts_won, -pop_votes) |>
+  rename(party_simplified = party) |>
+  left_join(pres_races,
+            by = c("year", "state", "party_simplified")) |>
+  select(year, state, total_electoral, candidate) |>
+  group_by(year, candidate) |>
+  summarize(electoral = sum(total_electoral)) |>
+  slice_max(order_by = electoral,
+            n = 1,
+            with_ties = FALSE) |>
+  drop_na()
+
+# Data table
+datatable(setNames(district_wide_winner, 
+                   c("Year", "Winning Candidate", "Electoral Votes")),
+          options = list(pageLength = 10, autoWidth = TRUE))
+```
+
+
+
+## 3. State-Wide Proportional
+
+In a state-wide proportional strategy, the electoral college votes are distributed based on the percentage of the popular vote that the candidate received in the state.
+
+The following code will get the winning candidate per state per year. 
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Calculate vote share per candidate in each state / year
+pres_races1 <- pres_races |>
+  mutate(vote_share = round((candidatevotes / totalvotes), digits = 0))
+
+# Join ecv data and pres races data
+pres_races1 <- pres_races1 |>
+  left_join(ecv_by_state,
+            by = c("year", "state"))
+
+# Calculate ECVs per candidate
+pres_races1 <- pres_races1 |>
+  mutate(ecv_per_candidate = round((vote_share * ecv), digits = 0))
+
+# Filter to keep only the candidate with the maximum ECVs per state and year
+state_proportion <- pres_races1 |>
+  group_by(year, state) |>
+  slice_max(ecv_per_candidate, with_ties = FALSE) |>
+  ungroup()
+
+# Select final columns for display
+state_proportion <- state_proportion |>
+  select(year, state, candidate, ecv_per_candidate)
+```
+
+
+
+Now that we have that information, we can determine the presidential winner based on the state-wide-proportional strategy. 
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# Find national winner
+national_winner <- state_proportion |>
+  group_by(year, candidate) |>
+  summarise(total_ecv = sum(ecv_per_candidate, na.rm = TRUE)) |>
+  ungroup() |>
+  group_by(year) |>
+  slice_max(total_ecv, with_ties = FALSE) |>
+  ungroup()
+
+# Display the national winner for each year
+datatable(
+  setNames(national_winner, c("Year", "Candidate", "Total Electoral Votes")),
+  options = list(pageLength = 10, autoWidth = TRUE)
+)
+```
+
+
+
+## 4. National Proportional
+
+In a national-proportional strategy, the electoral college votes are distributed based on the percentage of the popular vote that the candidate received in the nation.
+
+
+
+```{r echo=TRUE, message=FALSE}
+#| code-fold: true
+# # of ECV available
+ecv_available <- ecv_by_state |>
+  group_by(year) |>
+  summarize(ecv_vote = sum(ecv))
+
+# % of popular vote each candidate received
+nat_prop <- pres_races |>
+  select(year, state, candidate, candidatevotes) |>
+  group_by(year, candidate) |>
+  summarize(total_electoral_votes = sum(candidatevotes)) |>
+  group_by(year) |>
+  mutate(pop_vote_count = sum(total_electoral_votes)) |>
+  ungroup() |>
+  mutate(perc_pop_vote = (total_electoral_votes / pop_vote_count)) |>
+  select(-total_electoral_votes, -pop_vote_count) |>
+  left_join(ecv_available,
+            join_by(year == year)) |>
+  mutate(ecv_received = round(perc_pop_vote * ecv_vote, digits = 0)) |>
+  select(-perc_pop_vote, -ecv_vote) |>
+  group_by(year) |>
+  slice_max(order_by = ecv_received,
+            n = 1,
+            with_ties = FALSE) |>
+  rename(winner = candidate)
+
+# Data table
+datatable(setNames(nat_prop,
+          c("Year", 
+            "Winning Candidate",
+            "ECV")),
+          options = list(pageLength = 10,
+                         autoWidth = TRUE))
+```
+
+
+
+## The Fact Check
+
+There are pros and cons to all of these electoral college vote allocation strategies However, after analyzing all of the data, the **national proportional** strategy appears to be the "fairest," due to it being representative of the entire nation's voting population's interests. It takes into account the people's opinions evenly, irrespective to the state populations. 
+
+Following this, the **state-wide proportional** strategy would be considered "second fairest." It is representative of the people's opinions on a state level; this is what makes it "less fair" than the national proportional strategy, as people's opinions are weighed by state. There is a potential for skews in opinion due to each state having a different amount of electoral college votes available. 
+
+The **state-wide winner-take-all** and **district-wide winner-take-all and state-wide "at large" votes** strategies are the "least fair" strategies available, due to them not offering a true representation of the nation's interests. The state-strategy only represents a portion of the sentiments of the voters in a state, and the district-wide strategy is prone to skewness from different population sizes within the district. This is different from the state-wide proportional and national proportional, due to the difference in population size scaling. 
+
+# Data Source Citations
+
+Jeffrey B. Lewis, Brandon DeVine, Lincoln Pitcher, and Kenneth C. Martis. (2013) Digital Boundary Definitions of United States Congressional Districts, 1789-2012. \[Data file and code book\]. Retrieved from https://cdmaps.polisci.ucla.edu on \[October 30, 2024\].
+
+MIT Election Data and Science Lab, 2017, "U.S. House 1976–2022", https://doi.org/10.7910/DVN/IG0UN2, Harvard Dataverse, V13, UNF:6:Ky5FkettbvohjTSN/IVldA== \[fileUNF\]
+
+MIT Election Data and Science Lab, 2017, "U.S. President 1976–2020", https://doi.org/10.7910/DVN/42MVDX, Harvard Dataverse, V8, UNF:6:F0opd1IRbeYI9QyVfzglUw== \[fileUNF\]
+
