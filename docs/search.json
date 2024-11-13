@@ -263,7 +263,7 @@
     "href": "mp03.html",
     "title": "Mini-Project #03",
     "section": "",
-    "text": "Author: Thanh Dao\nUpdated: November 12th, 2024 @ 3:30PM"
+    "text": "Author: Thanh Dao\nUpdated: November 12th, 2024 @ 7:42PM"
   },
   {
     "objectID": "mp03.html#r-packages",
@@ -284,14 +284,14 @@
     "href": "mp03.html#data-2-congressional-boundary-files-1976---2012",
     "title": "Mini-Project #03",
     "section": "Data 2: Congressional Boundary Files (1976 - 2012)",
-    "text": "Data 2: Congressional Boundary Files (1976 - 2012)\nWe will now automate the download process for zip files for all US Congressional districts from 1976 to 2012. They will be obtained from here.\n\n\nCode\n# Function to get the congressional districts\nget_cdmaps_file &lt;- function(fname) {\n  BASE_URL &lt;- \"https://cdmaps.polisci.ucla.edu/shp/\"\n  fname_ext &lt;- paste0(fname, \".zip\")\n  if (!file.exists(fname_ext)) {\n    FILE_URL &lt;- paste0(BASE_URL, fname_ext)\n    download.file(FILE_URL,\n                  destfile = fname_ext\n    )\n  }\n}\n\n# Loop through Congress sessions from 94 to 112 and call get_cdmaps_file\n# January 14, 1975 to January 3, 2013\nfor (session in 94:112) {\n  get_cdmaps_file(paste0(\"districts\", sprintf(\"%03d\", session)))\n}"
+    "text": "Data 2: Congressional Boundary Files (1976 - 2012)\nWe will now automate the download process for zip files for all US Congressional districts from 1976 to 2012. They will be obtained from here.\n\n\nCode\nget_file &lt;- function(fname){\n  BASE_URL &lt;- \"https://cdmaps.polisci.ucla.edu/shp/\"\n  fname_ext &lt;- paste0(fname, \".zip\")\n  fname_ext1 &lt;- paste0(fname, \".shp\")\n  fname_extunzip &lt;- gsub(\".zip$\", \"\", fname_ext)\n  subfolder &lt;- \"districtShapes\"\n  if(!file.exists(fname_ext)){\n    FILE_URL &lt;- paste0(BASE_URL, fname_ext)\n    download.file(FILE_URL, \n                  destfile = fname_ext)\n  }\n  # Unzip contents and save\n  unzip(zipfile = fname_ext, exdir = fname_extunzip)\n  # Define file Path\n  shapefile_path &lt;- file.path(fname_extunzip, subfolder, fname_ext1)\n  # Read .shp\n  read_sf(shapefile_path)\n}\n\n# Download files by iterating through\nstart_congress = 95\nend_congress = 114\nfor (i in start_congress:end_congress) {\n  district_name &lt;- sprintf(\"districts%03d\", i) \n  district_data &lt;- get_file(district_name)\n  assign(district_name, district_data, envir = .GlobalEnv) \n}"
   },
   {
     "objectID": "mp03.html#data-3-congressional-boundary-files-2014---present",
     "href": "mp03.html#data-3-congressional-boundary-files-2014---present",
     "title": "Mini-Project #03",
     "section": "Data 3: Congressional Boundary Files (2014 - Present)",
-    "text": "Data 3: Congressional Boundary Files (2014 - Present)\nNow, we will automate the download process for US Census Bureau shp from here; specifically the CD directory found in the FTP Archive.\n\n\nCode\n# 113th Congress started January 3, 2013\n# 116th Congress ended January 3, 2021\ncongress_sessions &lt;- 113:116\nyears &lt;- c(2013, 2014, 2016, 2018)\n\n# Loop through each Congress session and download if not already present\nfor (i in seq_along(congress_sessions)) {\n  file_name &lt;- paste0(\"districts\", congress_sessions[i], \".zip\")\n  url &lt;- paste0(\"https://www2.census.gov/geo/tiger/TIGER\", years[i], \"/CD/tl_\", \n                years[i], \"_us_cd\", congress_sessions[i], \".zip\")\n  \n  # Download only if the file does not exist\n  if (!file.exists(file_name)) {\n    download.file(url, destfile = file_name)\n  }\n}"
+    "text": "Data 3: Congressional Boundary Files (2014 - Present)\nNow, we will automate the download process for US Census Bureau shp from here; specifically the CD directory found in the FTP Archive.\n\n\nCode\nget_congress_file &lt;- function(fname, year){\n  BASE_URL &lt;- sprintf(\"https://www2.census.gov/geo/tiger/TIGER%d/CD/\", year)\n  fname_ext &lt;- paste0(fname, \".zip\")\n  fname_ext1 &lt;- paste0(fname, \".shp\")\n  fname_extunzip &lt;- gsub(\".zip$\", \"\", fname_ext)\n  \n  # Download File\n  if(!file.exists(fname_ext)){\n    FILE_URL &lt;- paste0(BASE_URL, fname_ext)\n    download.file(FILE_URL, \n                  destfile = fname_ext)\n  }\n  # Unzip contents and save\n  unzip(zipfile = fname_ext, exdir = fname_extunzip)\n  # Define File Path\n  shapefile_path &lt;- file.path(fname_extunzip, fname_ext1)\n  # Read .shp\n  read_sf(shapefile_path)\n}\n\n# Download file for each district by iterating through each year\nbase_year = 2022\nbase_congress = 116  # Congress number for 2012\nfor (i in 0:10) { \n  year &lt;- base_year - i\n  if (year &gt;= 2018) {congress &lt;- 116} \n  else if (year &gt;= 2016) {congress &lt;- 115} \n  else if (year &gt;= 2014) {congress &lt;- 114} \n  else if (year == 2013) {congress &lt;- 113} \n  else if (year == 2012) {congress &lt;- 112}\n  district_name &lt;- sprintf(\"tl_%d_us_cd%d\", year, congress)\n  district_data &lt;- get_congress_file(district_name, year) \n  assign(district_name, district_data, envir = .GlobalEnv)  \n  }"
   },
   {
     "objectID": "mp03.html#seats-in-the-us-house-of-representatives",
@@ -348,5 +348,12 @@
     "title": "Mini-Project #03",
     "section": "The Fact Check",
     "text": "The Fact Check\nThere are pros and cons to all of these electoral college vote allocation strategies However, after analyzing all of the data, the national proportional strategy appears to be the “fairest,” due to it being representative of the entire nation’s voting population’s interests. It takes into account the people’s opinions evenly, irrespective to the state populations.\nFollowing this, the state-wide proportional strategy would be considered “second fairest.” It is representative of the people’s opinions on a state level; this is what makes it “less fair” than the national proportional strategy, as people’s opinions are weighed by state. There is a potential for skews in opinion due to each state having a different amount of electoral college votes available.\nThe state-wide winner-take-all and district-wide winner-take-all and state-wide “at large” votes strategies are the “least fair” strategies available, due to them not offering a true representation of the nation’s interests. The state-strategy only represents a portion of the sentiments of the voters in a state, and the district-wide strategy is prone to skewness from different population sizes within the district. This is different from the state-wide proportional and national proportional, due to the difference in population size scaling."
+  },
+  {
+    "objectID": "test.html",
+    "href": "test.html",
+    "title": "Untitled",
+    "section": "",
+    "text": "Testing Document"
   }
 ]
