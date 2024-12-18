@@ -7,15 +7,19 @@ format:
 ---
 
 Author: Thanh Dao\
-Last Updated: December 9th, 2024 @12:50AM
+Last Updated: December 18th, 2024 @2:33PM
 
 # Abstract
 
 This report is looking into what influences the likelihood of rat infestations in different NYC neighborhoods. Specifically, this is through the lens of what the effect of NYC DOH programs have on the rat population in NYC. We can determine that rat sightings do decrease on a yearly basis after the NYC DOH applies bait, and this is most effective in the Bronx. 
 
+The overall report can be found [here](https://thanhtdao922.github.io/STA9750-2024-FALL/group_report.html).
+
 # Introduction
 
 [Rats](https://en.wikipedia.org/wiki/Rats_in_New_York_City) are a notorious part of [NYC](https://www.nyc.gov/) urban life, often associated with the city's dense infrastructure and vast waste production. They live in sewers, subways, and parks, and have become a public health concern. It would be interesting to see what influences the likelihood of rat infestations in different NYC neighborhoods. Specifically, it would be looked at through the lens of public health programs, where we examine the effect of [NYC DOH](https://www.nyc.gov/site/doh/index.page) programs on the rat population. We will be looking at data from 2019 to present day.
+
+The main overall report can be found [here]().
 
 # Obtaining the Necessary Data
 
@@ -56,6 +60,8 @@ These data sources are both government sources, making them very reliable. They 
 Additionally, both sources provide the location, time, and other details regarding each rat sighting and inspection. These aspects will be helpful for this report's spatial analysis and pattern recognition.
 
 However, the rat sightings data specifically is prone to under-reporting and location-based bias, due to it only containing reported sightings. This points to a lack of contextual information; however, the rat inspections data can help supplement.
+
+Another thing to point out would be the effects of the [COVID-19 pandemic](https://www.cdc.gov/covid/about/index.html) and [quarantining](https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020), where people were in lock down and stayed inside. This points to a decrease in sightings and investigations through mid 2020 and throughout 2021. However, we can assume that both were affected equally, and thus it can be assumed there won't be any major outliers as a result. 
 
 ## Basic NYC Map
 
@@ -502,7 +508,7 @@ ggplot(bait_per_year, aes(x = Year,
   theme_linedraw()
 ```
 
-Across all the inspections thus far, we can see a large drop in 2020 and 2021; this can be attributed to the [COVID-19 pandemic](https://www.cdc.gov/covid/about/index.html) and [quarantining](https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020). However, actions were still made against the rat population, and thus they will still be considered.
+Across all the inspections thus far, we can see a large drop in 2020 and 2021; this can be attributed to the COVID-19 pandemic, as mentioned earlier. However, actions were still made against the rat population, and thus they will still be considered.
 
 ## Comparing Sightings to Bait Inspections - Time
 
@@ -510,7 +516,7 @@ We will now compare the sightings data to the bait data; specifically, we will e
 
 ### Overall
 
-Before we do a "before and after" application of bait, We will create a correlation map **as is**.
+Before we do a "cause-and-effect" application of bait, We will create a correlation map **as is**.
 
 ```{r echo=TRUE, message=FALSE}
 #| code-fold: true
@@ -585,7 +591,7 @@ Overall, there appears to be a **positive relationship between bait inspections 
 
 ### Yearly
 
-We will now examine this through a "cause and effect" lens, where we examine the correlation between bait inspections from one year and rat sightings in the following year. 
+We will now examine this through a "cause-and-effect" lens, where we examine the correlation between bait inspections from one year and rat sightings in the following year. 
 
 ```{r echo=TRUE, message=FALSE}
 #| code-fold: true
@@ -947,3 +953,5 @@ This means that **in Staten Island, higher bait inspections has a beneficial imp
 After all of these analyses, it can be concluded that the NYC DOH program of placing rat bait across the city is effective on a yearly basis, with the programs being effective in decreasing the number of rat sightings, as seen by a correlation of `-0.53` and in Figure 8.
 
 The bait is most effective in **the Bronx**, and least effective in **Queens**, as seen by the correlations of `-0.84` and `0.13`, respectively. 
+
+In future works, it would be interesting to examine the effect of seasons on rat sightings, and see if that is correlated to rat inspections. Other methods of determining correlation outside of the "cause-and-effect" lens would also be beneficial, to further back up the findings and potentially uncover new ones. 

@@ -158,14 +158,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Author: Thanh Dao<br>
-Last Updated: December 9th, 2024 <span class="citation" data-cites="12:50AM">@12:50AM</span></p>
+Last Updated: December 18th, 2024 <span class="citation" data-cites="2:33PM">@2:33PM</span></p>
 <section id="abstract" class="level1">
 <h1>Abstract</h1>
 <p>This report is looking into what influences the likelihood of rat infestations in different NYC neighborhoods. Specifically, this is through the lens of what the effect of NYC DOH programs have on the rat population in NYC. We can determine that rat sightings do decrease on a yearly basis after the NYC DOH applies bait, and this is most effective in the Bronx.</p>
+<p>The overall report can be found <a href="https://thanhtdao922.github.io/STA9750-2024-FALL/group_report.html">here</a>.</p>
 </section>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p><a href="https://en.wikipedia.org/wiki/Rats_in_New_York_City">Rats</a> are a notorious part of <a href="https://www.nyc.gov/">NYC</a> urban life, often associated with the city’s dense infrastructure and vast waste production. They live in sewers, subways, and parks, and have become a public health concern. It would be interesting to see what influences the likelihood of rat infestations in different NYC neighborhoods. Specifically, it would be looked at through the lens of public health programs, where we examine the effect of <a href="https://www.nyc.gov/site/doh/index.page">NYC DOH</a> programs on the rat population. We will be looking at data from 2019 to present day.</p>
+<p>The main overall report can be found <a href="">here</a>.</p>
 </section>
 <section id="obtaining-the-necessary-data" class="level1">
 <h1>Obtaining the Necessary Data</h1>
@@ -204,6 +206,7 @@ Last Updated: December 9th, 2024 <span class="citation" data-cites="12:50AM">@12
 <p>These data sources are both government sources, making them very reliable. They are also updated daily; for this report specifically, the latest data is from November 2024.</p>
 <p>Additionally, both sources provide the location, time, and other details regarding each rat sighting and inspection. These aspects will be helpful for this report’s spatial analysis and pattern recognition.</p>
 <p>However, the rat sightings data specifically is prone to under-reporting and location-based bias, due to it only containing reported sightings. This points to a lack of contextual information; however, the rat inspections data can help supplement.</p>
+<p>Another thing to point out would be the effects of the <a href="https://www.cdc.gov/covid/about/index.html">COVID-19 pandemic</a> and <a href="https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020">quarantining</a>, where people were in lock down and stayed inside. This points to a decrease in sightings and investigations through mid 2020 and throughout 2021. However, we can assume that both were affected equally, and thus it can be assumed there won’t be any major outliers as a result.</p>
 </section>
 </section>
 <section id="basic-nyc-map" class="level2">
@@ -235,7 +238,7 @@ Last Updated: December 9th, 2024 <span class="citation" data-cites="12:50AM">@12
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>nyc_sf <span class="ot">&lt;-</span> <span class="fu">read_shp_from_zip</span>(<span class="st">"nyc_borough_boundaries.zip"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Reading layer `geo_export_992fdf87-1fb2-4c6c-b53c-f66dbdaa04a5' from data source `/tmp/RtmpX0IcwO/geo_export_992fdf87-1fb2-4c6c-b53c-f66dbdaa04a5.shp' 
+<pre><code>Reading layer `geo_export_992fdf87-1fb2-4c6c-b53c-f66dbdaa04a5' from data source `/tmp/Rtmp9dLpot/geo_export_992fdf87-1fb2-4c6c-b53c-f66dbdaa04a5.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 5 features and 4 fields
 Geometry type: MULTIPOLYGON
@@ -420,8 +423,8 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>          <span class="at">caption =</span> <span class="st">"Table 1: Rat Sightings and Inspections per Borough"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-00b3219c97e7cd5a1b80" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-00b3219c97e7cd5a1b80">{"x":{"filter":"none","caption":"<caption>Table 1: Rat Sightings and Inspections per Borough<\/caption>","data":[["1","2","3","4","5","6","7"],["BRONX","BROOKLYN","MANHATTAN","QUEENS","STATEN ISLAND","Unspecified",null],[21349,51929,34929,21574,4130,13,3],[279597,396068,348456,72059,15798,null,250]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Borough<\/th>\n      <th>Sightings<\/th>\n      <th>Inspections<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a96ed7d79426dc6970ac" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a96ed7d79426dc6970ac">{"x":{"filter":"none","caption":"<caption>Table 1: Rat Sightings and Inspections per Borough<\/caption>","data":[["1","2","3","4","5","6","7"],["BRONX","BROOKLYN","MANHATTAN","QUEENS","STATEN ISLAND","Unspecified",null],[21349,51929,34929,21574,4130,13,3],[279597,396068,348456,72059,15798,null,250]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Borough<\/th>\n      <th>Sightings<\/th>\n      <th>Inspections<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>We can see that <a href="https://en.wikipedia.org/wiki/Brooklyn"><strong>Brooklyn</strong></a> has most rat sightings and inspections, at 51,929 and 396,068, respectively.</p>
@@ -531,8 +534,8 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>, <span class="at">autoWidth =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-8a6764bf05ea544e3cea" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8a6764bf05ea544e3cea">{"x":{"filter":"none","caption":"<caption>Table 2: Number of Rat Sightings per Year<\/caption>","data":[["1","2","3","4","5","6"],[2019,2020,2021,2022,2023,2024],[16808,16262,25012,26500,25452,23578],[null,-546,8750,1488,-1048,-1874]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>Sightings<\/th>\n      <th>Difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"orderable":false,"targets":0}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-6a5f03a6be9199dad082" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6a5f03a6be9199dad082">{"x":{"filter":"none","caption":"<caption>Table 2: Number of Rat Sightings per Year<\/caption>","data":[["1","2","3","4","5","6"],[2019,2020,2021,2022,2023,2024],[16808,16262,25012,26500,25452,23578],[null,-546,8750,1488,-1048,-1874]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>Sightings<\/th>\n      <th>Difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"orderable":false,"targets":0}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -594,8 +597,8 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>, <span class="at">autoWidth =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-3a2de6f409ce858224e6" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3a2de6f409ce858224e6">{"x":{"filter":"none","caption":"<caption>Table 3: Number of Rat Inspections per Year<\/caption>","data":[["1","2","3","4","5","6"],[2019,2020,2021,2022,2023,2024],[244393,72102,105302,238401,238523,210206],[null,-172291,33200,133099,122,-28317]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>Inspections<\/th>\n      <th>Difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"orderable":false,"targets":0}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-1b688d3e4170581d7eff" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1b688d3e4170581d7eff">{"x":{"filter":"none","caption":"<caption>Table 3: Number of Rat Inspections per Year<\/caption>","data":[["1","2","3","4","5","6"],[2019,2020,2021,2022,2023,2024],[244393,72102,105302,238401,238523,210206],[null,-172291,33200,133099,122,-28317]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>Inspections<\/th>\n      <th>Difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"orderable":false,"targets":0}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -647,8 +650,8 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">caption =</span> <span class="st">"Table 4: Types of Rat Inspections"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-7dc751c3f1f2c0986d6a" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7dc751c3f1f2c0986d6a">{"x":{"filter":"none","caption":"<caption>Table 4: Types of Rat Inspections<\/caption>","data":[["1","2","3"],["INITIAL","COMPLIANCE","BAIT"],[770669,180225,161334]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Inspection Type<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ce3892cc1d8af9b8f44c" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ce3892cc1d8af9b8f44c">{"x":{"filter":"none","caption":"<caption>Table 4: Types of Rat Inspections<\/caption>","data":[["1","2","3"],["INITIAL","COMPLIANCE","BAIT"],[770669,180225,161334]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Inspection Type<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>There are 3 types of inspections: initial, compliance, and bait. Initial refers to the first inspection. If a property were to fail this initial inspection, the DOH will conduct a compliance inspection, which is followed by baiting. This refers to the application of <a href="https://en.wikipedia.org/wiki/Rodenticide">rodenticide</a> or a monitored visit by a Health Department Pest Control Professional.</p>
@@ -675,8 +678,8 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">caption =</span> <span class="st">"Table 5: Bait Inspections (2019-2024)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-2cdd320ba80ea6e7477b" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2cdd320ba80ea6e7477b">{"x":{"filter":"none","caption":"<caption>Table 5: Bait Inspections (2019-2024)<\/caption>","data":[["1","2","3","4","5","6"],[2019,2020,2021,2022,2023,2024],[35752,8796,17320,29220,40518,29170]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-8da968116c1db9330111" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8da968116c1db9330111">{"x":{"filter":"none","caption":"<caption>Table 5: Bait Inspections (2019-2024)<\/caption>","data":[["1","2","3","4","5","6"],[2019,2020,2021,2022,2023,2024],[35752,8796,17320,29220,40518,29170]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>Count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -708,7 +711,7 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 </div>
 </div>
 </div>
-<p>Across all the inspections thus far, we can see a large drop in 2020 and 2021; this can be attributed to the <a href="https://www.cdc.gov/covid/about/index.html">COVID-19 pandemic</a> and <a href="https://www.ajmc.com/view/a-timeline-of-covid19-developments-in-2020">quarantining</a>. However, actions were still made against the rat population, and thus they will still be considered.</p>
+<p>Across all the inspections thus far, we can see a large drop in 2020 and 2021; this can be attributed to the COVID-19 pandemic, as mentioned earlier. However, actions were still made against the rat population, and thus they will still be considered.</p>
 </section>
 </section>
 <section id="comparing-sightings-to-bait-inspections---time" class="level2">
@@ -716,7 +719,7 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <p>We will now compare the sightings data to the bait data; specifically, we will examine the number of sightings per borough before and after the bait was applied through the lens of time.</p>
 <section id="overall" class="level3">
 <h3 class="anchored" data-anchor-id="overall">Overall</h3>
-<p>Before we do a “before and after” application of bait, We will create a correlation map <strong>as is</strong>.</p>
+<p>Before we do a “cause-and-effect” application of bait, We will create a correlation map <strong>as is</strong>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -802,7 +805,7 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 </section>
 <section id="yearly" class="level3">
 <h3 class="anchored" data-anchor-id="yearly">Yearly</h3>
-<p>We will now examine this through a “cause and effect” lens, where we examine the correlation between bait inspections from one year and rat sightings in the following year.</p>
+<p>We will now examine this through a “cause-and-effect” lens, where we examine the correlation between bait inspections from one year and rat sightings in the following year.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1201,6 +1204,7 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 <h1>Conclusions</h1>
 <p>After all of these analyses, it can be concluded that the NYC DOH program of placing rat bait across the city is effective on a yearly basis, with the programs being effective in decreasing the number of rat sightings, as seen by a correlation of <code>-0.53</code> and in Figure 8.</p>
 <p>The bait is most effective in <strong>the Bronx</strong>, and least effective in <strong>Queens</strong>, as seen by the correlations of <code>-0.84</code> and <code>0.13</code>, respectively.</p>
+<p>In future works, it would be interesting to examine the effect of seasons on rat sightings, and see if that is correlated to rat inspections. Other methods of determining correlation outside of the “cause-and-effect” lens would also be beneficial, to further back up the findings and potentially uncover new ones.</p>
 
 
 </section>
