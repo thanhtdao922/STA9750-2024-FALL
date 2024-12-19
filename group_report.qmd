@@ -1,5 +1,5 @@
 ---
-title: "Rat Pack - Final Report"
+title: "Rat Pack - Final Group Report"
 editor: visual
 format:
   html:
@@ -83,13 +83,13 @@ We analyzed the impact of NYC DOH bait programs on rat sightings using data from
 
 Overall, on a yearly basis, the data reveals a moderately strong correlation, suggesting that increased bait inspections are somewhat effective in reducing rat sightings. However, when examined on a monthly basis, no significant relationship was observed. This indicates that a monthly time frame may be too short to capture measurable effects.
 
-Focusing instead on a yearly perspective across boroughs, the findings reveal that bait programs are highly effective in the Bronx, showing a strong correlation with reduced sightings. In contrast, no correlation was found in Queens, suggesting the programs may have little to no impact there.
+Focusing instead on a yearly perspective across boroughs, the findings reveal that **bait programs are highly effective in the Bronx**, showing a strong correlation with reduced sightings. In contrast, no correlation was found in Queens, suggesting the programs may have little to no impact there.
 
 The following are 2 sample figures created throughout this process, and display the correlation between bait inspections and next year’s sightings. To the left is the overall, while to the right is specifically for the Bronx. Further figures and analysis can be found in the NYC DOH report linked above.
 
 ![Figures for DOH Report](doh_photo.png)
 
-Overall, we can say that NYC DOH programs, specifically their bait initiative, is beneficial in decreasing the rat sightings in NYC on a yearly basis.
+Overall, we can say that **NYC DOH programs, specifically their bait initiative, are beneficial in *decreasing* the rat sightings in NYC on a yearly basis**.
 
 ## Income and Unemployment
 

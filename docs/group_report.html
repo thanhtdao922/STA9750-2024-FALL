@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Rat Pack - Final Report – STA 9750 2024 Submission Material</title>
+<title>Rat Pack - Final Group Report – STA 9750 2024 Submission Material</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -97,7 +97,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Rat Pack - Final Report</h1>
+<h1 class="title">Rat Pack - Final Group Report</h1>
 </div>
 
 
@@ -115,18 +115,18 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><strong>Authors</strong>: Thanh Dao, Valeriia Frolova, Aachal Grimire, Elijah Yong, Gracie Zheng<br>
-<strong>Last Updated</strong>: December 18th, 2024 <span class="citation" data-cites="2:33PM">@2:33PM</span></p>
+<strong>Last Updated</strong>: December 19th, 2024 <span class="citation" data-cites="1:25PM">@1:25PM</span></p>
 <section id="abstract" class="level1">
 <h1>Abstract</h1>
 <p>This study investigates the relationship between various factors, including socioeconomic indicators and urban infrastructure, and rat populations in New York City. Our analysis reveals several key findings:</p>
 <ul>
-<li><strong>Effectiveness of Bait Programs</strong>: New York City’s Department of Health (DOH) bait programs have been effective in reducing rat sightings over time in regions like the Bronx but not effective in regions like Queens. There is a significant yearly correlation but insignificant monthly correlation.</li>
-<li><strong>Limited Correlation with Socioeconomic Factors</strong>: We found little to no correlation between unemployment rates, median income, and rat sightings, suggesting that socioeconomic factors may not be the primary drivers of rat infestations.</li>
-<li><strong>Impact of Outdoor Dining</strong>: There is a strong positive relationship between the increase in outdoor seating violations and rat infestations with restaurants with B&amp;C grades resulting in high rat population density.</li>
-<li><strong>Impact of Urban Infrastructure</strong>: The presence of bins, while a potential source of food, does not necessarily equate to higher rat infestations. However, restaurants were found to have a direct impact on rat populations.</li>
-<li><strong>Public Transportation and Rat Sightings</strong>: Public transportation locations were found to have little effect on rat sightings.</li>
+<li><strong>Bait Programs</strong>: New York City’s Department of Health (DOH) bait programs have been effective in reducing yearly rat sightings over time.</li>
+<li><strong>Socioeconomic Factors</strong>: We found minimal correlation between unemployment rates, median income, and rat sightings, indicating that socioeconomic factors may not be primary drivers of infestations.</li>
+<li><strong>Outdoor Dining</strong>: There is a strong positive relationship between outdoor seating violations and rat infestations, particularly at restaurants with B and C grades.</li>
+<li><strong>Urban Infrastructure</strong>: The presence of bins does not necessarily lead to increased infestations, though restaurants significantly impact rat populations.</li>
+<li><strong>Public Transportation</strong>: Public transportation locations have minimal influence on rat sightings.</li>
 </ul>
-<p>These findings highlight the complex interplay of factors influencing rat populations in urban environments. Future research could delve deeper into the specific factors that contribute to rat infestations and explore more effective strategies for control and prevention.</p>
+<p>These findings underscore the complexity of urban rat infestations. Future research should explore targeted strategies for control, addressing specific drivers of infestation patterns.</p>
 </section>
 <section id="background" class="level1">
 <h1>Background</h1>
@@ -145,7 +145,7 @@ ul.task-list li input[type="checkbox"] {
 <li>The effect of food scrap drop-off sites (<a href="https://whaleron.github.io/STA9750-2024-FALL/mp05.html">report</a>)</li>
 <li>The effect of NYC public transportation (<a href="">report</a>)</li>
 </ul>
-<p>The corresponding, in-depth programs are linked with each topic.</p>
+<p>The corresponding, in-depth reports are linked with each topic.</p>
 </section>
 </section>
 <section id="data-used" class="level1">
@@ -154,7 +154,6 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><a href="https://data.cityofnewyork.us/Social-Services/Rat-Sightings/3q43-55fe/about_data">Rat sightings</a></li>
 <li><a href="https://data.cityofnewyork.us/Health/Rodent-Inspection/p937-wjvj/about_data">Rodent inspection</a></li>
-<li><a href="https://www.nyc.gov/site/doh/data/data-home.page">NYC Health</a></li>
 <li><a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/data">Restaurant inspection results</a></li>
 <li><a href="https://data.cityofnewyork.us/Environment/Food-Scrap-Drop-Off-Locations-Map/n5y5-3ud3">Food scrap drop-off locations</a></li>
 <li><a href="https://data.ny.gov/Transportation/MTA-Subway-Stations/39hk-dx4f/about_data">MTA subway stations</a></li>
@@ -163,10 +162,10 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <section id="limitations" class="level2">
 <h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
-<p>Although the data used in our analysis was sourced from government agencies, it is not without limitations. One significant issue lies in the nature of certain data sets, such as those documenting rat sightings or inspections, which are prone to reporting and location-based biases. Since these data sets rely solely on reported incidents, the actual level of rat activity in an area may be underrepresented or over-represented, depending on the willingness or ability of residents to report sightings. As a result, the data may not provide a fully accurate depiction of rat infestations across the city.</p>
-<p>Another limitation stems from the lack of contextual information within some data sets. For instance, certain data columns were non-descriptive or contained missing values, which hindered a deeper understanding of the underlying patterns. While we were able to mitigate this issue to some extent by cross-referencing with other data sources, it still posed challenges in ensuring comprehensive analysis.</p>
-<p>Lastly, there was a notable absence of data directly from the MTA, a crucial factor in understanding the relationship between NYC’s public transportation system and rat activity. This gap forced us to extrapolate and make certain assumptions, which, while informed, may not fully capture the nuances of how transit systems contribute to or are affected by rat infestations.</p>
-<p>Despite these challenges, the data sets we used remain highly valuable for identifying broad trends and forming initial insights. The limitations, while important to acknowledge, do not undermine the significance of the analysis they enabled.</p>
+<p>The data used in our analysis, though sourced from government agencies, has notable limitations. One key issue involves reporting and location-based biases in data sets like rat sightings and inspections. These rely on reported incidents, meaning actual rat activity may be underrepresented or over-represented depending on residents’ willingness or ability to report sightings. This leads to an incomplete picture of infestations across the city.</p>
+<p>Additionally, some data sets lacked context, with non-descriptive or missing values in certain columns. While cross-referencing with other sources helped mitigate this, it posed challenges to achieving a thorough understanding of underlying patterns.</p>
+<p>A significant gap was the absence of MTA data, critical for exploring the link between public transportation and rat activity. This forced reliance on extrapolations and assumptions, which may not fully capture transit-related nuances.</p>
+<p>Despite these constraints, the data provided valuable insights into broad trends, forming a strong foundation for analysis.</p>
 </section>
 </section>
 <section id="prior-work" class="level1">
@@ -178,7 +177,6 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>Low education levels</strong>: Lower education levels may correlate with lower awareness of sanitation practices and increased risk of attracting rats.</li>
 </ul>
 <p>These findings suggest that targeted interventions, such as improved sanitation and maintenance of vacant properties, can help reduce rat populations in specific areas.</p>
-<p><a href="https://www.nytimes.com/article/curbside-composting-brooklyn.html">NYC’s composting program</a> is a cornerstone of the city’s zero-waste goals, aiming to divert organic waste from landfills and reduce greenhouse gas emissions. The program initially began as a pilot project in select neighborhoods and has since expanded to include all five boroughs, with full implementation expected by 2025. This initiative is not without challenges. Public adoption remains inconsistent, and the effectiveness of composting infrastructure in densely populated neighborhoods is still under scrutiny.</p>
 <p>Building on previous research, we also decided to use reported rat sightings as the closest proxy for actual rat populations. We aimed to expand upon prior findings by exploring additional factors like DOH bait programs, income and unemployment, restaurant density, presence of food scraps, and transit density.</p>
 </section>
 <section id="findings" class="level1">
@@ -187,7 +185,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="nyc-doh">NYC DOH</h2>
 <p>We analyzed the impact of NYC DOH bait programs on rat sightings using data from OpenData, specifically focusing on rat sightings and rat inspections. The analysis uses a cause-and-effect approach, comparing the number of bait inspections in one year to rat sightings in the following year, and drawing conclusions based on a calculated correlation coefficient.</p>
 <p>Overall, on a yearly basis, the data reveals a moderately strong correlation, suggesting that increased bait inspections are somewhat effective in reducing rat sightings. However, when examined on a monthly basis, no significant relationship was observed. This indicates that a monthly time frame may be too short to capture measurable effects.</p>
-<p>Focusing instead on a yearly perspective across boroughs, the findings reveal that bait programs are highly effective in the Bronx, showing a strong correlation with reduced sightings. In contrast, no correlation was found in Queens, suggesting the programs may have little to no impact there.</p>
+<p>Focusing instead on a yearly perspective across boroughs, the findings reveal that <strong>bait programs are highly effective in the Bronx</strong>, showing a strong correlation with reduced sightings. In contrast, no correlation was found in Queens, suggesting the programs may have little to no impact there.</p>
 <p>The following are 2 sample figures created throughout this process, and display the correlation between bait inspections and next year’s sightings. To the left is the overall, while to the right is specifically for the Bronx. Further figures and analysis can be found in the NYC DOH report linked above.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -195,7 +193,7 @@ ul.task-list li input[type="checkbox"] {
 <figcaption>Figures for DOH Report</figcaption>
 </figure>
 </div>
-<p>Overall, we can say that NYC DOH programs, specifically their bait initiative, is beneficial in decreasing the rat sightings in NYC on a yearly basis.</p>
+<p>Overall, we can say that <strong>NYC DOH programs, specifically their bait initiative, are beneficial in <em>decreasing</em> the rat sightings in NYC on a yearly basis</strong>.</p>
 </section>
 <section id="income-and-unemployment" class="level2">
 <h2 class="anchored" data-anchor-id="income-and-unemployment">Income and Unemployment</h2>
@@ -224,6 +222,31 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="restaurants" class="level2">
 <h2 class="anchored" data-anchor-id="restaurants">Restaurants</h2>
+<p>New York City’s ongoing battle with rat infestations is a multifaceted issue, with poor restaurant sanitation playing a significant role. By analyzing restaurant inspection grades, violation data, and rat activity across various boroughs, this report uncovers the connection between poorly rated restaurants (Grades B and C) and rat infestations. Additionally, we examine the impact of outdoor dining trends and restaurant density on rat activity, providing borough-specific insights to highlight areas of concern and potential solutions.</p>
+<section id="poor-restaurant-sanitation" class="level3">
+<h3 class="anchored" data-anchor-id="poor-restaurant-sanitation">Poor Restaurant Sanitation</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="grades_vs_borough.png" class="img-fluid figure-img"></p>
+<figcaption>Restaurants with Lower Grades in Different Zip Codes</figcaption>
+</figure>
+</div>
+<p>Brooklyn’s ZIP codes 11215 and 11222 have the highest rat densities (over 20,000), while the Bronx 10457 and 10458 show high densities (over 12,000), both linked to poor sanitation. Queens’ 11385 and 11373 also see peaks, while Manhattan’s 10013 and 10036 show moderate rat activity despite many poorly graded restaurants. Staten Island 10301 reports the lowest rat activity with minimal infestations.</p>
+</section>
+<section id="restaurant-density-per-neighborhood" class="level3">
+<h3 class="anchored" data-anchor-id="restaurant-density-per-neighborhood">Restaurant Density per Neighborhood</h3>
+<p>Our analysis reveals a positive correlation between restaurant density and rat infestations. Manhattan (~94,661 restaurants) and Brooklyn (~69,797) showed the highest rat activity, with 136,963 and 145,694 inspections, respectively, driven by increased food waste. The Bronx, an outlier, reported high rat activity (~96,498 inspections) despite moderate restaurant density (~23,274), indicating other factors like waste management may contribute. Conversely, Staten Island, with fewer restaurants (~9,218), reported minimal activity (~2,049 inspections), supporting the link between restaurant density and infestations.</p>
+<p><img src="restaurant_density.png" class="img-fluid" alt="Figure for Restaurant Density and Rat Activity"> ### Outdoor Dining</p>
+<p>The rise of outdoor dining in NYC during the COVID-19 pandemic brought new challenges in controlling rat populations. Comparing 2019 pre-pandemic data to post-COVID years, we observed a sharp increase in outdoor seating violations and rat infestations, peaking in 2023 and 2024 as outdoor dining expanded.</p>
+<p>The <strong>article</strong> <a href="https://www.eater.com/22828594/restaurants-more-rats-pandemic">“The new Normal, <em>Ah!! Rats!!</em></a> by Elazar Sontag (Eater, December 14, 2021) supports our findings, explaining how restaurant reopenings and outdoor dining created food waste that fueled rat resurgence. Initially, rat populations declined during restaurant closures, but cities like Chicago, Los Angeles, and New Orleans faced similar challenges, showing this is a broader urban issue.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="outdoor_seating.png" class="img-fluid figure-img"></p>
+<figcaption>Figure on Outdoor Seating and Rat Infestations</figcaption>
+</figure>
+</div>
+<p>Our analysis highlights a strong connection between restaurant density, poor sanitation, outdoor dining, and rising rat activity in NYC, especially post-COVID. Boroughs like Brooklyn and the Bronx face significant infestations due to dense, poorly graded restaurants and improper waste management.</p>
+</section>
 </section>
 <section id="food-drop-off-sites" class="level2">
 <h2 class="anchored" data-anchor-id="food-drop-off-sites">Food Drop-Off Sites</h2>
@@ -250,18 +273,49 @@ ul.task-list li input[type="checkbox"] {
 <figcaption>Figures for Top Complaints Per Site</figcaption>
 </figure>
 </div>
-<p>Proper disposal methods, securely closed bins, and community compliance are crucial to ensuring the success of this initiative. With the program expanding and bins increasingly installed across the city, the responsibility largely falls on residents to follow proper usage guidelines. This is particularly relevant as mandatory composting rules and fines will take effect in spring 2025, making compliance a critical component of addressing current challenges.</p>
-<p>Further analysis is needed to fully understand the interplay of factors influencing rodent activity near food scrap locations. Socioeconomic dynamics, pedestrian traffic in busy neighborhoods, and bin design (e.g., metal vs.&nbsp;plastic) should be explored to develop more targeted interventions. As the initiative grows, tracking the effects of new rules and public adherence on rat complaints will provide valuable insights into its overall impact. These findings establish a foundation for ongoing evaluation and highlight the importance of a multifaceted approach to managing urban sustainability challenges.</p>
+<p>Proper disposal, securely closed bins, and community compliance are key to this program’s success. With bins expanding citywide and mandatory composting rules and fines beginning in spring 2025, resident adherence is essential to overcoming current challenges.</p>
+<p>Further research is needed to examine factors influencing rodent activity near food scrap bins, including socioeconomic conditions, pedestrian traffic, and bin design (e.g., metal vs.&nbsp;plastic). As the program grows, monitoring the impact of new rules and public compliance on rat complaints will offer valuable insights. These findings emphasize the need for a multifaceted strategy to tackle urban sustainability and public health challenges.</p>
 </section>
 <section id="public-transportation" class="level2">
 <h2 class="anchored" data-anchor-id="public-transportation">Public Transportation</h2>
+<p>We analyzed the potential relationship between public transportation and rat sightings, focusing on the MTA’s subway and bus systems. Examining the overlap between rat sightings and transit locations across NYC, we found a weak correlation between where rats are present and where people travel.</p>
+<p>Our analysis explored rat sightings near subway stations and bus stops. Overall, sightings were distributed across the city, with no strong alignment to transit hubs. However, specific areas, such as parts of Staten Island and the Rockaways, showed some overlap with transit lines, suggesting localized patterns that warrant further investigation.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rat_vs_transportation_maps.png" class="img-fluid figure-img"></p>
+<figcaption>Figures for Rat Sightings vs Transportation Modes</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="corr_rat_transportation.png" class="img-fluid figure-img"></p>
+<figcaption>Correlation between Rat Sightings and Transportation Modes</figcaption>
+</figure>
+</div>
+<p>Through correlation analysis, location points are quantified by calculating the difference between the sighting and the station/subway. We can see that the further away the location of transportation is, the less sightings. However, there is actually a weak negative relationship for both, -.25 on subways and -.41 on buses. Therefore, rat sightings cannot be explained strongly by public transportation locations.</p>
+<p>The second investigation looked at the number of public transportation per neighborhood compared to rat sightings per neighborhood.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="nycmaps.png" class="img-fluid figure-img"></p>
+<figcaption>Figures for NYC Maps</figcaption>
+</figure>
+</div>
+<p>These graphs show an initial analysis of the count of each throughout NYC’s neighborhood. When we glance over these graphs, we see that sightings are more concentrated in the West side of Manhattan and the upper half of Brooklyn, where the train stations seem to also be slightly concentrated.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="corr_analysis_transportation.png" class="img-fluid figure-img"></p>
+<figcaption>Figures for Correlation Analysis</figcaption>
+</figure>
+</div>
+<p>When we do our correlation analysis, as the number of stations increase, there is a slight increase in rat sightings. However, there is weak correlation, at .37 subways and .25 stops.</p>
+<p>Though we see that there is a weak correlation between rat sightings and public transportation, as you read into the individual report, you may see how difficult it was to gather such data points. The data is not perfect so, many points were cleaned away but, if sighting data was wholly collected by the MTA agency and location points reported perfectly, the answer to this question may change.</p>
 </section>
 </section>
 <section id="next-steps" class="level1">
 <h1>Next Steps</h1>
-<p>For future work, we propose several key steps to deepen our understanding and improve outcomes. First, conducting public surveys will be critical to gather direct feedback and insights from residents. These surveys can help uncover nuanced perspectives on how rat infestations are impacting communities, as well as highlight gaps in current efforts. Second, prioritizing the collection of more detailed and accurate data is essential. By refining data sources and methods, we can better identify the underlying factors driving infestations, enabling more targeted interventions.</p>
-<p>Third, it is important to examine the role of public behavior and policies in shaping outcomes. This includes assessing which practices have been effective and identifying areas where adjustments are needed. Understanding the interplay between community actions and policy measures will provide valuable lessons on what works and why. Lastly, comparing NYC’s approach to pest control with those of other cities can help us identify successful strategies and best practices that could be adapted to local conditions. Learning from cities that have effectively managed similar challenges can inspire innovative solutions tailored to NYC’s unique context.</p>
-<p>By following these steps, we can build a more comprehensive understanding of the issue and develop informed, data-driven strategies to combat rat infestations more effectively.</p>
+<p>To advance our efforts, we propose several key steps to improve outcomes and understanding. First, conducting public surveys will provide valuable insights into how rat infestations impact communities and reveal gaps in current strategies. Direct feedback from residents can help identify specific concerns and areas needing attention.</p>
+<p>Second, enhancing data collection methods is essential. More detailed and accurate data will uncover the root causes of infestations, enabling precise and targeted interventions. Third, assessing the influence of public behavior and policies is critical. Analyzing effective practices and identifying areas for improvement will offer valuable lessons on what works and why.</p>
+<p>Lastly, comparing NYC’s pest control approach with those of other cities can uncover successful strategies and best practices. Adapting proven solutions from cities with similar challenges can inspire innovative approaches tailored to NYC’s needs. Together, these steps will foster a more informed, data-driven strategy to address rat infestations effectively.</p>
 
 
 </section>
